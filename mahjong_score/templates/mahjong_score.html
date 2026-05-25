@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="jp">
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3960554800027594"
+     crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>麻雀点数_{{page_id}}</title>
+</head>
+<style>/* =====================================
+   Reset / Base
+===================================== */
+*,
+*::before,
+*::after{
+    box-sizing:border-box;
+}
+
+html{
+    -webkit-text-size-adjust:100%;
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
+    padding:24px 14px;
+    background:#f5f7fb;
+    color:#222;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:16px;
+    line-height:1.4;
+}
+
+/* =====================================
+   Typography
+===================================== */
+h1{
+    margin:0;
+    font-size:28px;
+    font-weight:700;
+    text-align:center;
+    letter-spacing:.02em;
+}
+
+h2{
+    margin:0 0 8px;
+    font-size:14px;
+    font-weight:700;
+    color:#555;
+}
+
+/* =====================================
+   Buttons
+===================================== */
+button{
+    appearance:none;
+    border:none;
+    border-radius:12px;
+    padding:11px 16px;
+    background:#4f8cff;
+    color:#fff;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.18s ease;
+}
+
+button:hover{
+    background:#3c79f0;
+}
+
+button:active{
+    transform:scale(.97);
+}
+
+.settingButton{
+    width:100%;
+    margin:0;
+    padding:10px 12px;
+    font-size:13px;
+}
+
+/* =====================================
+   Link Button Wrapper
+===================================== */
+a{
+    text-decoration:none;
+}
+
+/* =====================================
+   Inputs / Select
+===================================== */
+input,
+select{
+    width:100%;
+    min-height:44px;
+    padding:10px 12px;
+    border:1px solid #d9e1ec;
+    border-radius:10px;
+    background:#fff;
+    font-size:14px;
+    color:#222;
+    transition:.15s ease;
+}
+
+input:focus,
+select:focus{
+    outline:none;
+    border-color:#4f8cff;
+    box-shadow:0 0 0 3px rgba(79,140,255,.14);
+}
+
+input::placeholder{
+    color:#9aa3b2;
+}
+
+/* =====================================
+   Settings Popup Area
+===================================== */
+.settings{
+    position:relative;
+    width:min(1100px,100%);
+}
+
+.setting{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    z-index:999;
+    width:360px;
+    max-width:calc(100vw - 20px);
+    max-height:90vh;
+    overflow:auto;
+
+    background:#fff;
+    border-radius:18px;
+    padding:20px;
+    border:1px solid #e7edf4;
+    box-shadow:0 24px 60px rgba(0,0,0,.16);
+}
+
+.setting[hidden]{
+    display:none !important;
+}
+
+.setting p{
+    margin:0 0 12px;
+}
+
+.setting p:last-child{
+    margin-bottom:0;
+}
+
+.settinginp{
+    margin-top:2px;
+}
+
+/* =====================================
+   Table
+===================================== */
+table{
+    width:min(1100px,100%);
+    border-collapse:separate;
+    border-spacing:0;
+    background:#fff;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 10px 26px rgba(0,0,0,.06);
+}
+
+th{
+    background:#eef3f8;
+    color:#555;
+    font-size:14px;
+    font-weight:700;
+    padding:10px 6px;
+    text-align:center;
+    white-space:nowrap;
+}
+
+td{
+    padding:6px;
+    text-align:center;
+    border-top:1px solid #f1f4f8;
+}
+
+/* =====================================
+   Table Inputs
+===================================== */
+table input{
+    min-width:66px;
+    min-height:44px;
+    padding:10px 6px;
+    text-align:center;
+    font-size:15px;
+}
+
+.name{
+    min-width:96px;
+}
+
+/* =====================================
+   Score Row
+===================================== */
+#scores td, #place td{
+    background:#fafbfd;
+    height:54px;
+    font-weight:700;
+}
+
+.score{
+    margin:0;
+    font-size:18px;
+}
+
+/* =====================================
+   Error
+===================================== */
+.error{
+    background:#ff6b6b !important;
+    color:#fff !important;
+    border-color:#ff6b6b !important;
+}
+
+/* =====================================
+   Utility spacing for top buttons
+===================================== */
+body > button,
+body > a{
+    width:min(260px,100%);
+}
+
+body > a button{
+    width:100%;
+}
+
+.buttons{
+    display: flex;
+}
+
+.buttons > button{
+    margin: 10px;
+    width: 150px;
+}
+
+.buttons > a{
+    margin: 10px;
+}
+
+.pay span{
+    font-weight: bolder;
+    font-size: 20px;
+}
+
+#version,#copyRightPara{
+    margin: 0;
+    font-size: 13px;
+    color: #767676;
+}
+.header{
+    position:relative;
+    width:min(1100px,100%);
+    display:flex;
+    align-items:center;
+    justify-content:center; /* タイトル中央 */
+}
+
+/* タイトル */
+.header h1{
+    margin:0;
+    text-align:center;
+}
+
+/* ？ボタン（右端固定） */
+#showNotice{
+    margin: 0px;
+    position:absolute;
+    right:0;
+    top:50%;
+    transform:translateY(-50%);
+    color: #939393;
+
+    border:2px solid #939393;
+    border-radius:50%;
+    width:28px;
+    height:28px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+    cursor:pointer;
+}
+/* =====================================
+   Notice（使い方・リリースノート）
+===================================== */
+.notice{
+    width:min(900px,100%);
+    background:#ffffff;
+    border:1px solid #e7edf4;
+    border-radius:18px;
+    padding:20px 22px;
+    box-shadow:0 12px 30px rgba(0,0,0,.08);
+
+    animation:fadeIn .2s ease;
+}
+
+/* 見出し */
+.notice h1{
+    font-size:18px;
+    margin:18px 0 10px;
+    padding-bottom:6px;
+    border-bottom:2px solid #eef3f8;
+}
+
+/* 最初の見出しだけ余白詰める */
+.notice h1:first-child{
+    margin-top:0;
+}
+
+/* リスト */
+.notice ol,
+.notice ul{
+    margin:0;
+    padding-left:18px;
+}
+
+.notice li{
+    margin:6px 0;
+    font-size:14px;
+    color:#333;
+}
+
+/* 補足テキスト */
+.notice li br{
+    margin-bottom:4px;
+}
+
+#showNotice.show{
+    color: #ffffff;
+    background-color: #333;
+}
+
+/* フェードイン */
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(-6px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+/* =====================================
+   Tablet
+===================================== */
+@media (max-width:900px){
+
+    body{
+        padding:18px 10px;
+    }
+
+    h1{
+        font-size:24px;
+    }
+
+    table{
+        display:block;
+        overflow-x:auto;
+        white-space:nowrap;
+        border-radius:16px;
+    }
+
+    table input{
+        min-width:60px;
+        min-height:42px;
+        font-size:14px;
+    }
+
+    .name{
+        min-width:84px;
+    }
+}
+
+/* =====================================
+   Smartphone
+===================================== */
+@media (max-width:600px){
+
+    body{
+        padding:12px 6px;
+        gap:12px;
+    }
+
+    h1{
+        font-size:22px;
+    }
+
+    button{
+        width:100%;
+        padding:12px;
+        font-size:14px;
+    }
+
+    .setting{
+        width:calc(100vw - 14px);
+        padding:16px;
+        border-radius:16px;
+    }
+
+    table{
+        width:100%;
+        display:block;
+        overflow-x:auto;
+        white-space:nowrap;
+    }
+
+    th{
+        font-size:12px;
+        padding:7px 4px;
+    }
+
+    td{
+        padding:4px;
+    }
+
+    table input{
+        min-width:56px;
+        min-height:40px;
+        font-size:12px;
+        padding:8px 4px;
+    }
+
+    .name{
+        min-width:74px;
+    }
+
+    .score{
+        font-size:17px;
+    }
+}</style>
+<body>
+    <div class="header">
+        <h1>麻雀スコア表</h1>
+        <p id="showNotice" onclick="showNotice()">？</p>
+    </div>
+    <p id="version">ver1.2.1</p>
+    <div class="notice" hidden>
+        <h1>基本的な使い方</h1>
+        <ol>
+            <li>メンバーの名前を入力</li>
+            <li>レートを事前に入力する</li>
+            <li>ウマオカを適用する場合は設定ボタンから設定</li>
+            <li>ゲームが終了したら得点を100点単位で入力(35000点なら350)<br>※参加していない人の欄は空欄に</li>
+            <li>場代を払った人の列に金額を入力する</li>
+            <li>下に表示される通りにやり取りをする</li>
+        </ol>
+        <h1>ver1.2.1リリースノート</h1>
+        <ul>
+            <li>ついに、メンバーが5人以上に追加可能に</li>
+            <li>一卓で一ページ立てればメンバーが変わってもそれぞれ計算ができるように</li>
+            <li>使い方の説明の追加</li>
+            <li>その他軽微なバグ修正</li>
+        </ul>
+        <h1>ver1.2.0リリースノート</h1>
+        <ul>
+            <li>途中でメンバーが抜け三麻に変わっても対応可能に</li>
+            <li>だれが何円誰に払うかを場代を含めて計算可能に</li>
+            <li>参加ゲーム数に応じて場代を自動で分配</li>
+            <li>次の試合のレートを入れた際に収支が影響されず確定した値を示すように</li>
+            <li>点数の合計が一致しているかをよりスマートに判断、表示</li>
+        </ul>
+    </div>
+    <div class="buttons">
+        <button onclick= 'urlCopy()'>URLをコピー</button>
+        <a href="{{url_for('home')}}"><button>新規ページ</button></a>
+    </div>
+    <div class="settings">
+        <div class="setting" id="setting0" hidden>
+            <h2>ウマ0</h2>
+            <select name="uma0" id="uma0">
+                <option value="0_0">0</option>
+                <option value="5_10">5_10</option>
+                <option value="10_20">10_20</option>
+                <option value="10_30">10_30</option>
+                <option value="other">その他</option>
+            </select>
+            <p><input type="text" name="umainp" class="settinginp" id="umainp0" placeholder="その他 ex.)20_30"></p>
+            <h2>オカ</h2>
+            <select name="oka" id="oka0">
+                <option value="0">0</option>
+                <option value="50">+5000返し</option>
+                <option value="100">+10000返し</option>
+                <option value="200">+20000返し</option>
+                <option value="other">その他</option>
+            </select>
+            <p><input type="number" name="okainp" class="settinginp" id="okainp0" placeholder="その他 ex.)15000"></p>
+            <p><button class="settingButton" onclick="settingSubmit(0)">決定</button></p>
+            <p><button class="settingButton" onclick="settingSubmitAll(0)">すべてに適用</button></p>
+        </div>
+        <div class="setting" id="setting1" hidden>
+            <h2>ウマ2</h2>
+            <select name="uma1" id="uma1">
+                <option value="0_0">0</option>
+                <option value="5_10">5_10</option>
+                <option value="10_20">10_20</option>
+                <option value="10_30">10_30</option>
+                <option value="other">その他</option>
+            </select>
+            <p><input type="text" name="umainp" class="settinginp" id="umainp1" placeholder="その他 ex.)20_30"></p>
+            <h2>オカ</h2>
+            <select name="oka" id="oka1">
+                <option value="0">0</option>
+                <option value="50">+5000返し</option>
+                <option value="100">+10000返し</option>
+                <option value="200">+20000返し</option>
+                <option value="other">その他</option>
+            </select>
+            <p><input type="number" name="okainp" class="settinginp" id="okainp1" placeholder="その他"></p>
+            <p><button class="settingButton" onclick="settingSubmit(1)">決定</button></p>
+            <p><button class="settingButton" onclick="settingSubmitAll(1)">すべてに適用</button></p>
+        </div>
+    </div>
+    <table>
+    <tbody>
+        <tr>
+            <th>レート</th>
+            <th><input type="text" class="name" id="name0" placeholder="player1"></th>
+            <th><input type="text" class="name" id="name1" placeholder="player2"></th>
+            <th><input type="text" class="name" id="name2" placeholder="player3"></th>
+            <th><input type="text" class="name" id="name3" placeholder="player4"></th>
+            <th><button class="addMemberButton" onclick="addMember()">+</button></th>
+        </tr>
+        <tr id="row0">
+            <td><input type="number" class="num rate" id="rate_0"></td>
+            <td><input type="number" class="num num0" id="num0_0"></td>
+            <td><input type="number" class="num num1" id="num1_0"></td>
+            <td><input type="number" class="num num2" id="num2_0"></td>
+            <td><input type="number" class="num num3" id="num3_0"></td>
+            <td><button class="settingButton" onclick="setting(0)">設定</button></td>
+        </tr>
+        <tr id="row1">
+            <td><input type="number" class="num rate" id="rate_1"></td>
+            <td><input type="number" class="num num0" id="num0_1"></td>
+            <td><input type="number" class="num num1" id="num1_1"></td>
+            <td><input type="number" class="num num2" id="num2_1"></td>
+            <td><input type="number" class="num num3" id="num3_1"></td>
+            <td><button  class="settingButton" onclick="setting(1)">設定</button></td>
+        </tr>
+        <tr id="scores">
+            <td>sum:</td>
+            <td><p class="score" id="score0">0</p></td>
+            <td><p class="score" id="score1">0</p></td>
+            <td><p class="score" id="score2">0</p></td>
+            <td><p class="score" id="score3">0</p></td>
+        </tr>
+        <tr id="place">
+            <td>場代</td>
+            <td><input class="place" id="place0"></input></td>
+            <td><input class="place" id="place1"></input></td>
+            <td><input class="place" id="place2"></input></td>
+            <td><input class="place" id="place3"></input></td>
+        </tr>
+    </tbody>
+    </table>
+    <button onclick="addRow()">Add row</button>
+    <div class="pay">
+        <div class="paySentences"><p><span class="payName" id="payName0"></span>⇒<span class="paidName" id="paidName0"></span>：￥<span class="payMount" id="payAmount0"></span></p></div>
+        <div class="paySentences"><p><span class="payName" id="payName1"></span>⇒<span class="paidName" id="paidName1"></span>：￥<span class="payMount" id="payAmount1"></span></p></div>
+        <div class="paySentences"><p><span class="payName" id="payName2"></span>⇒<span class="paidName" id="paidName2"></span>：￥<span class="payMount" id="payAmount2"></span></p></div>
+    </div>
+    <div class="copyRight">
+        <p id="copyRightPara">© 2026 Kai Mizuno</p>
+    </div>
+<script>
+    let maxRow = 2
+    let memberNum = 4
+    let uma = [[0,0,0,0],[0,0,0,0]]
+    let uma3 = [[0,0,0],[0,0,0]]
+    let oka = [0,0]
+    let umaList = ["0_0","5_10","10_20","10_30",]
+    let okaList = [0,50,100,200]//numに
+    let umaDefo = [0,0,0,0]
+    let uma3Defo = [0,0,0]
+    let okaDefo = 0
+
+    function scoreCheck(){
+        //rank
+        ranks = []
+        statusList = [...Array(maxRow)].map(e => 0)
+
+        for(let i=0; i<maxRow; i++){
+            points = []
+            for(let j=0; j<memberNum; j++){
+                point = document.querySelector(`#num${j}_${i}`).value
+                statusList[i] += (point != "")
+            }
+            for(let j=0; j<memberNum; j++){
+                point = document.querySelector(`#num${j}_${i}`).value
+                if(statusList[i] <= 4 && statusList[i] >= 3 && !(point === "")){
+                    points.push(point)
+                }
+                else{
+                    points.push(-10000)
+                }
+                console.log("RANK",i,j,point,point==="")
+            }
+            rank = points.map(e=> e? [...points].sort((a,b)=>b-a).indexOf(e):false)
+
+            exists = {}
+            rank2 = rank.map(e=>{
+                if (e==-1000){
+                    return false
+                }
+                else if (e in exists){
+                    exists[e] ++
+                    return e + exists[e]
+                }
+                else{
+                    exists[e] = 0
+                    return e
+                }
+            })
+            ranks.push(rank2)
+        }
+        console.log("statusList",statusList,ranks)
+
+
+        //sum score
+        for(let i=0; i<memberNum; i++){
+            sumPoint = 0
+
+            for (let j=0; j<maxRow; j++){
+                rate = (document.querySelector(`#rate_${j}`).value==="")? 0:parseInt(document.querySelector(`#rate_${j}`).value)
+                point = (document.querySelector(`#num${i}_${j}`).value==="")? false:parseInt(document.querySelector(`#num${i}_${j}`).value)
+
+                if (statusList[j] == 3){
+                    if (point===false){
+                        point2 = 0
+                    }
+                    else{
+                        point2 = point-(350+oka[j])
+                        point2 += ranks[j][i]==0? oka[j]*3:0
+                        point2 += uma3[j][ranks[j][i]]
+                    }
+                }
+
+                else if (statusList[j] == 4){
+                    if (point===false){
+                        point2 = 0
+                    }
+                    else{
+                        point2 = point-(250+oka[j])
+                        point2 += ranks[j][i]==0? oka[j]*4:0
+                        point2 += uma[j][ranks[j][i]]
+                    }
+                }
+
+                else{
+                    point2 = 0
+                }
+                console.log("SC",i,j,point2,point,document.querySelector(`#num${i}_${j}`).value==="")
+                sumPoint += rate * point2
+            }
+            document.querySelector(`#score${i}`).textContent = sumPoint
+        }
+        //score check
+        for(let i =0; i<maxRow;i++){
+            sumPoint = 0
+            for(let j=0; j<memberNum; j++){
+                sumPoint = sumPoint + parseInt(document.querySelector(`#num${j}_${i}`).value? document.querySelector(`#num${j}_${i}`).value:0)
+            }
+            correctSumPoint = statusList[i] == 4? 1000:statusList[i] == 3? 1050:0
+            if (statusList[i] <= 2){
+                document.querySelectorAll(`#row${i} input`).forEach(e=>e.classList.remove("error"))
+            }
+            else if (sumPoint != correctSumPoint){
+                document.querySelectorAll(`#row${i} input`).forEach(e=>e.classList.add("error"))
+            }
+            else{
+                document.querySelectorAll(`#row${i} input`).forEach(e=>e.classList.remove("error"))
+            }
+        }
+        sendData()
+        payCalc()
+    }
+
+    function addRow(){
+        tr = document.createElement("tr")
+        tr.id = `row${maxRow}`
+        td = document.createElement("td")
+        input = document.createElement("input")
+        input.type = "number"
+        input.className = "num rate"
+        input.id = `rate_${maxRow}`
+        input.addEventListener("input",scoreCheck)
+        td.appendChild(input)
+        tr.appendChild(td)
+        for (let i=0; i<memberNum; i++){
+            td = document.createElement("td")
+            input = document.createElement("input")
+            input.type = "number"
+            input.className = `num num${i}`
+            input.id = `num${i}_${maxRow}`
+            input.addEventListener("input",scoreCheck)
+            td.appendChild(input)
+            tr.appendChild(td)
+        }
+        tr.insertAdjacentHTML("beforeend",'<td><button class="settingButton" onclick="setting(0)">設定</button></td>')
+        document.querySelector("tbody").insertBefore(tr,document.querySelector("#scores"))
+
+        document.querySelector(".settings").insertAdjacentHTML("beforeend",`<div class="setting" id="setting${maxRow}" hidden>
+            <h2>ウマ</h2>
+            <select name="uma${maxRow}" id="uma${maxRow}">
+                <option value="0_0">0</option>
+                <option value="5_10">5_10</option>
+                <option value="10_20">10_20</option>
+                <option value="10_30">10_30</option>
+                <option value="other">その他</option>
+            </select>
+            <p><input type="text" name="umainp" class="settinginp" id="umainp${maxRow}" placeholder="その他 ex.)20_30"></p>
+            <h2>オカ</h2>
+            <select name="oka" id="oka${maxRow}">
+                <option value="0" >0</option>
+                <option value="50">+5000返し</option>
+                <option value="100">+10000返し</option>
+                <option value="200">+20000返し</option>
+                <option value="other">その他</option>
+            </select>
+            <p><input type="number" name="okainp" class="settinginp" id="okainp${maxRow}" placeholder="その他"></p>
+            <p><button onclick="settingSubmit(${maxRow})" class="settingButton">決定</button></p>
+        </div>`)
+
+        uma.push(umaDefo)
+        uma3.push(uma3Defo)
+        oka.push(okaDefo)
+
+        maxRow++
+        scoreCheck()
+    }
+
+    function firstAddRow(){
+        tr = document.createElement("tr")
+        tr.id = `row${maxRow}`
+        td = document.createElement("td")
+        input = document.createElement("input")
+        input.type = "number"
+        input.className = "num rate"
+        input.id = `rate_${maxRow}`
+        input.addEventListener("input",scoreCheck)
+        td.appendChild(input)
+        tr.appendChild(td)
+        for (let i=0; i<memberNum; i++){
+            td = document.createElement("td")
+            input = document.createElement("input")
+            input.type = "number"
+            input.className = `num num${i}`
+            input.id = `num${i}_${maxRow}`
+            input.addEventListener("input",scoreCheck)
+            td.appendChild(input)
+            tr.appendChild(td)
+        }
+        tr.insertAdjacentHTML("beforeend",'<td><button class="settingButton" onclick="setting(0)">設定</button></td>')
+        document.querySelector("tbody").insertBefore(tr,document.querySelector("#scores"))
+
+        document.querySelector(".settings").insertAdjacentHTML("beforeend",`<div class="setting" id="setting${maxRow}" hidden>
+            <h2>ウマ</h2>
+            <select name="uma${maxRow}" id="uma${maxRow}">
+                <option value="0_0">0</option>
+                <option value="5_10">5_10</option>
+                <option value="10_20">10_20</option>
+                <option value="10_30">10_30</option>
+                <option value="other">その他</option>
+            </select>
+            <p><input type="text" name="umainp" class="settinginp" id="umainp${maxRow}" placeholder="その他 ex.)20_30"></p>
+            <h2>オカ</h2>
+            <select name="oka" id="oka${maxRow}">
+                <option value="0" >0</option>
+                <option value="50">+5000返し</option>
+                <option value="100">+10000返し</option>
+                <option value="200">+20000返し</option>
+                <option value="other">その他</option>
+            </select>
+            <p><input type="number" name="okainp" class="settinginp" id="okainp${maxRow}" placeholder="その他"></p>
+            <p><button onclick="settingSubmit(${maxRow})" class="settingButton">決定</button></p>
+        </div>`)
+
+        uma.push(umaDefo)
+        uma3.push(uma3Defo)
+        oka.push(okaDefo)
+
+        maxRow++
+    }
+    function addMember(){
+        //<th><input type="text" class="name" id="name3" placeholder="player4"></th>
+        //<td><input type="number" class="num num3" id="num3_0"></td>
+        //<td><p class="score" id="score3">0</p></td>
+        //<td><input class="place" id="place3"></input></td>
+        for(let i=0; i<maxRow; i++){
+            document.querySelector(`#num${memberNum-1}_${i}`).parentNode.insertAdjacentHTML("afterend",`<td><input type="number" class="num num${memberNum}" id="num${memberNum}_${i}"></td>`)
+
+        }
+        document.querySelector(`#name${memberNum-1}`).parentNode.insertAdjacentHTML("afterend",`<th><input type="text" class="name" id="name${memberNum}" placeholder="player${memberNum+1}"></th>`)
+        document.querySelector(`#scores`).insertAdjacentHTML("beforeend",`<td><p class="score" id="score${memberNum}">0</p></td>`)
+        document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input class="place" id="place${memberNum}"></input></td>`)
+        document.querySelector(".pay").insertAdjacentHTML("beforeend",`<div class="paySentences"><p><span class="payName" id="payName${memberNum-1}"></span>⇒<span class="paidName" id="paidName${memberNum-1}"></span>：￥<span class="payMount" id="payAmount${memberNum-1}"></span></p></div>`)
+
+        addEventHandler()
+
+        //uma.push(umaDefo)
+        //uma3.push(uma3Defo)
+        //oka.push(okaDefo)
+
+        memberNum++
+        scoreCheck()
+    }
+
+    function firstaddMember(){
+        for(let i=0; i<maxRow; i++){
+            document.querySelector(`#num${memberNum-1}_${i}`).parentNode.insertAdjacentHTML("afterend",`<td><input type="number" class="num num${memberNum}" id="num${memberNum}_${i}"></td>`)
+
+        }
+        document.querySelector(`#name${memberNum-1}`).parentNode.insertAdjacentHTML("afterend",`<th><input type="text" class="name" id="name${memberNum}" placeholder="player${memberNum+1}"></th>`)
+        document.querySelector(`#scores`).insertAdjacentHTML("beforeend",`<td><p class="score" id="score${memberNum}">0</p></td>`)
+        document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input class="place" id="place${memberNum}"></input></td>`)
+        document.querySelector(".pay").insertAdjacentHTML("beforeend",`<div class="paySentences"><p><span class="payName" id="payName${memberNum-1}"></span>⇒<span class="paidName" id="paidName${memberNum-1}"></span>：￥<span class="payMount" id="payAmount${memberNum-1}"></span></p></div>`)
+
+        //uma.push(umaDefo)
+        //uma3.push(uma3Defo)
+        //oka.push(okaDefo)
+
+        memberNum++
+    }
+
+    function setting(num){
+        document.querySelector(`#setting${num}`).hidden = false
+    }
+    function settingSubmit(num){
+        document.querySelector(`#setting${num}`).hidden = true
+        umainp = document.querySelector(`#umainp${num}`).value
+        okainp = parseInt(document.querySelector(`#okainp${num}`).value)
+
+        if(umainp){
+            umaPre = umainp.split("_").map(e=>parseInt(e)*10)
+            uma[num] = [umaPre[1],umaPre[0],-umaPre[0],-umaPre[1]]
+            uma3[num] = [umaPre[0]+umaPre[1],-umaPre[0],-umaPre[1]]
+        }
+        else{
+            umaPre = document.querySelector(`#uma${num}`).value.split("_").map(e=>parseInt(e)*10)
+            uma[num] = [umaPre[1],umaPre[0],-umaPre[0],-umaPre[1]]
+            uma3[num] = [umaPre[0]+umaPre[1],-umaPre[0],-umaPre[1]]
+        }
+
+        if(okainp){
+            oka[num] = okainp/100
+        }
+        else{
+            oka[num] = parseInt(document.querySelector(`#oka${num}`).value)
+        }
+
+        scoreCheck()
+        settingInput()
+    }
+
+    function settingSubmitAll(num){
+        settingSubmit(num)
+        umaDefo = uma[num]
+        uma3Defo = uma3[num]
+        okaDefo = oka[num]
+
+        uma = uma.map(e=>umaDefo)
+        uma3 = uma3.map(e=>uma3Defo)
+        oka = oka.map(e=>okaDefo)
+        settingInput()
+        scoreCheck()
+    }
+
+    async function sendData(){
+        datas = []
+        names = []
+        points = []
+        places = []
+        settings = [uma,oka]
+        document.querySelectorAll(".name").forEach(e => {
+            names.push(e.value)
+        });
+        document.querySelectorAll(".place").forEach(e => {
+            places.push(e.value)
+        });
+        for(let i=0; i<maxRow; i++){
+            nums = []
+            nums.push(document.querySelector(`#rate_${i}`).value)
+            for( let j=0; j<memberNum; j++){
+                nums.push(document.querySelector(`#num${j}_${i}`).value)
+            }
+            points.push(nums)
+        }
+        datas = [names,points,settings,places]
+        console.log("sendData",points)
+        res = await fetch("{{url_for('send_data',page_id=page_id)}}",{
+            "method":"POST",
+            "headers":{"Content-Type":"application/json"},
+            "body":JSON.stringify(datas)
+        })
+        console.log(res)
+    }
+
+
+    function settingInput(){
+        for(let i=0; i<maxRow; i++){
+            umaString = String(uma[i][1]/10)+"_"+String(uma[i][0]/10)
+            if(umaList.indexOf(umaString) >= 0){
+                document.querySelector(`#uma${i}`).querySelector(`option[value = "${umaString}"]`).selected = true
+                document.querySelector(`#umainp${i}`).value = ""
+            }
+            else{
+                document.querySelector(`#uma${i}`).querySelector(`option[value = "other"]`).selected = true
+                document.querySelector(`#umainp${i}`).value = umaString
+            }
+
+            if(okaList.indexOf(oka[i]) >= 0){
+                document.querySelector(`#oka${i}`).querySelector(`option[value = "${oka[i]}"]`).selected = true
+                document.querySelector(`#okainp${i}`).value = ""
+            }
+            else{
+                document.querySelector(`#oka${i}`).querySelector(`option[value = "other"]`).selected = true
+                document.querySelector(`#okainp${i}`).value = oka[i]*100
+            }
+
+        }
+    }
+
+    function urlCopy(){
+        navigator.clipboard.writeText("{{url_for('page',page_id = page_id, _external = True)}}")
+        alert("コピー完了")
+    }
+
+    document.addEventListener("DOMContentLoaded",()=>{
+        datas = {{datas | tojson}}
+        console.log("DOM",datas)
+
+        maxRow_max = datas[1].length
+        maxRow_org = maxRow
+
+        memberNum_max = datas[1][0].length
+        memberNum_org = memberNum
+
+        for(let i=0; i<maxRow_max-maxRow_org; i++){
+            firstAddRow()
+        }
+
+        for(let i=0; i<memberNum_max-memberNum_org-1; i++){
+            firstaddMember()
+        }
+
+        uma = datas[2][0]
+        uma3 = uma.map(e=>[e[0]+e[1],e[2],e[3]])
+        oka = datas[2][1]
+
+        settingInput()
+        addEventHandler()
+
+        for(let i=0; i<memberNum; i++){
+            document.querySelectorAll(".name")[i].value = datas[0][i]
+            document.querySelectorAll(".place")[i].value = datas[3][i]
+        }
+        for(let i=0; i<datas[1].length; i++){
+            document.querySelector(`#rate_${i}`).value = datas[1][i][0]
+            for(let j=0; j<memberNum; j++){
+                document.querySelector(`#num${j}_${i}`).value = datas[1][i][j+1]
+            }
+        }
+        scoreCheck()
+    })
+
+    function addEventHandler(){
+        document.querySelectorAll(".num").forEach(e=>{
+            e.addEventListener("input",()=>{
+                scoreCheck()
+            })
+        })
+        document.querySelectorAll(".name").forEach(e=>{
+            e.addEventListener("input",()=>{
+                sendData()
+                payCalc()
+            })
+        })
+        document.querySelectorAll(".place").forEach(e=>{
+            e.addEventListener("input",()=>{
+                sendData()
+                payCalc()
+                })
+        })
+    }
+
+    function payCalc(){
+        depts = [...Array(memberNum)].map((i,e)=>0)
+        memberNums = [...Array(memberNum)].map((i,e)=>0)
+        placeSum = 0
+
+        for(let i=0; i<memberNum; i++){
+            placeSum += document.querySelector(`#place${i}`).value? parseInt(document.querySelector(`#place${i}`).value):0
+
+            for(let j=0; j<maxRow; j++){
+                memberNums[i] += document.querySelector(`#num${i}_${j}`).value? 1:0
+            }
+        }
+
+        for(let i=0; i<memberNum; i++){
+            depts[i] -= document.querySelector(`#score${i}`).textContent? parseInt(document.querySelector(`#score${i}`).textContent):0
+            depts[i] -= document.querySelector(`#place${i}`).value? parseInt(document.querySelector(`#place${i}`).value):0
+            depts[i] += placeSum * memberNums[i] / memberNums.reduce((acc,cur)=>acc+cur,0)
+        }
+
+        deptsPlus = {}
+        deptsMinus = {}
+
+        for(let i in depts){
+            if (depts[i] > 0){
+                deptsPlus[i] = depts[i]
+            }
+            else if (depts[i] < 0){
+                deptsMinus[i] = depts[i]
+            }
+        }
+        deptsPlusOrder = [...Object.keys(deptsPlus)].sort((a,b)=>deptsPlus[b]-deptsPlus[a])
+        deptsMinusOrder = [...Object.keys(deptsMinus)].sort((a,b)=>deptsMinus[a]-deptsMinus[b])
+
+        let i = 0
+        let j = 0
+
+        pays = [] // [from,to,amount]
+
+        while(i < Object.keys(deptsPlus).length && j < Object.keys(deptsMinus).length){
+
+            if(deptsPlus[deptsPlusOrder[i]] > -deptsMinus[deptsMinusOrder[j]]){
+                pays.push([deptsPlusOrder[i],deptsMinusOrder[j], -deptsMinus[deptsMinusOrder[j]]])
+                deptsPlus[deptsPlusOrder[i]] += deptsMinus[deptsMinusOrder[j]]
+                j++
+            }
+
+            else if(deptsPlus[deptsPlusOrder[i]] < -deptsMinus[deptsMinusOrder[j]]){
+                pays.push([deptsPlusOrder[i],deptsMinusOrder[j],deptsPlus[deptsPlusOrder[i]]])
+                deptsMinus[deptsMinusOrder[j]] += deptsPlus[deptsPlusOrder[i]]
+                i++
+            }
+
+            else{
+                pays.push([deptsPlusOrder[i],deptsMinusOrder[j],deptsPlus[deptsPlusOrder[i]]])
+                deptsPlus[deptsPlusOrder[i]] = 0
+                deptsMinus[deptsMinusOrder[j]] = 0
+                i++
+                j++
+            }
+        }
+
+        console.log("pays",pays,depts)
+
+        if(pays.length == 0){
+            document.querySelector(".pay").hidden = true
+        }
+        else{
+            document.querySelector(".pay").hidden = false
+        }
+
+        for(let i=0; i<memberNum-1; i++){
+            document.querySelector(`#payName${i}`).textContent = ""
+            document.querySelector(`#paidName${i}`).textContent = ""
+            document.querySelector(`#payAmount${i}`).textContent = ""
+        }
+
+        for(let i in pays){
+            document.querySelector(`#payName${i}`).textContent = document.querySelector(`#name${pays[i][0]}`).value? document.querySelector(`#name${pays[i][0]}`).value : `player${parseInt(pays[i][0])+1}`
+            document.querySelector(`#paidName${i}`).textContent = document.querySelector(`#name${pays[i][1]}`).value? document.querySelector(`#name${pays[i][1]}`).value : `player${parseInt(pays[i][1])+1}`
+            document.querySelector(`#payAmount${i}`).textContent = pays[i][2]
+        }
+    }
+
+    function showNotice(){
+        document.querySelector('.notice').hidden = !document.querySelector('.notice').hidden
+        document.querySelector("#showNotice").classList.toggle("show")
+    }
+</script>
+</body>
+</html>
