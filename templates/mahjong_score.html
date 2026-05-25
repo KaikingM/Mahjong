@@ -448,7 +448,7 @@ body > a button{
         <h1>麻雀スコア表</h1>
         <p id="showNotice" onclick="showNotice()">？</p>
     </div>
-    <p id="version">ver1.2.1</p>
+    <p id="version">ver1.2.2</p>
     <div class="notice" hidden>
         <h1>基本的な使い方</h1>
         <ol>
@@ -459,6 +459,10 @@ body > a button{
             <li>場代を払った人の列に金額を入力する</li>
             <li>下に表示される通りにやり取りをする</li>
         </ol>
+        <h1>ver1.2.2リリースノート</h1>
+        <ul>
+            <li>チップ計算に対応</li>
+        </ul>
         <h1>ver1.2.1リリースノート</h1>
         <ul>
             <li>ついに、メンバーが5人以上に追加可能に</li>
@@ -551,6 +555,13 @@ body > a button{
             <td><input type="number" class="num num3" id="num3_1"></td>
             <td><button  class="settingButton" onclick="setting(1)">設定</button></td>
         </tr>
+        <tr id="row_tip">
+            <td><input type="number" class="num rate" id="rate_tip" value="100"></td>
+            <td><input type="number" class="num num0" id="num_tip_0" placeholder="チップ枚数"></td>
+            <td><input type="number" class="num num1" id="num_tip_1" placeholder="チップ枚数"></td>
+            <td><input type="number" class="num num2" id="num_tip_2" placeholder="チップ枚数"></td>
+            <td><input type="number" class="num num3" id="num_tip_3" placeholder="チップ枚数"></td>
+        </tr>
         <tr id="scores">
             <td>sum:</td>
             <td><p class="score" id="score0">0</p></td>
@@ -577,6 +588,7 @@ body > a button{
         <p id="copyRightPara">© 2026 Kai Mizuno</p>
     </div>
 <script>
+    const defaultTip = 20
     let maxRow = 2
     let memberNum = 4
     let uma = [[0,0,0,0],[0,0,0,0]]
@@ -666,6 +678,10 @@ body > a button{
                 console.log("SC",i,j,point2,point,document.querySelector(`#num${i}_${j}`).value==="")
                 sumPoint += rate * point2
             }
+
+            tipNum = document.querySelector(`#num_tip_${i}`).value? parseInt(document.querySelector(`#num_tip_${i}`).value):defaultTip
+            sumPoint += parseInt(document.querySelector("#rate_tip").value) * (tipNum - defaultTip)
+            
             document.querySelector(`#score${i}`).textContent = sumPoint
         }
         //score check
@@ -674,7 +690,9 @@ body > a button{
             for(let j=0; j<memberNum; j++){
                 sumPoint = sumPoint + parseInt(document.querySelector(`#num${j}_${i}`).value? document.querySelector(`#num${j}_${i}`).value:0)
             }
+
             correctSumPoint = statusList[i] == 4? 1000:statusList[i] == 3? 1050:0
+
             if (statusList[i] <= 2){
                 document.querySelectorAll(`#row${i} input`).forEach(e=>e.classList.remove("error"))
             }
@@ -685,6 +703,24 @@ body > a button{
                 document.querySelectorAll(`#row${i} input`).forEach(e=>e.classList.remove("error"))
             }
         }
+
+        sumTip = 0
+        numTipInput = 0
+
+        for(let i=0; i<memberNum; i++){
+            if (!(document.querySelector(`#num_tip_${i}`).value === "")){
+                sumTip += parseInt(document.querySelector(`#num_tip_${i}`).value)
+                numTipInput++
+            }
+        }
+
+        if (sumTip == defaultTip * numTipInput){
+            document.querySelectorAll("#row_tip input").forEach(e=>e.classList.remove("error"))
+        }
+        else{
+            document.querySelectorAll("#row_tip input").forEach(e=>e.classList.add("error"))
+        }
+        console.log("TIP",sumTip,numTipInput,defaultTip)
         sendData()
         payCalc()
     }
@@ -711,7 +747,7 @@ body > a button{
             tr.appendChild(td)
         }
         tr.insertAdjacentHTML("beforeend",'<td><button class="settingButton" onclick="setting(0)">設定</button></td>')
-        document.querySelector("tbody").insertBefore(tr,document.querySelector("#scores"))
+        document.querySelector("tbody").insertBefore(tr,document.querySelector("#row_tip"))
 
         document.querySelector(".settings").insertAdjacentHTML("beforeend",`<div class="setting" id="setting${maxRow}" hidden>
             <h2>ウマ</h2>
@@ -765,7 +801,7 @@ body > a button{
             tr.appendChild(td)
         }
         tr.insertAdjacentHTML("beforeend",'<td><button class="settingButton" onclick="setting(0)">設定</button></td>')
-        document.querySelector("tbody").insertBefore(tr,document.querySelector("#scores"))
+        document.querySelector("tbody").insertBefore(tr,document.querySelector("#row_tip"))
 
         document.querySelector(".settings").insertAdjacentHTML("beforeend",`<div class="setting" id="setting${maxRow}" hidden>
             <h2>ウマ</h2>
@@ -804,6 +840,7 @@ body > a button{
             document.querySelector(`#num${memberNum-1}_${i}`).parentNode.insertAdjacentHTML("afterend",`<td><input type="number" class="num num${memberNum}" id="num${memberNum}_${i}"></td>`)
 
         }
+        document.querySelector("#row_tip").insertAdjacentHTML("beforeend",`<td><input type="number" class="num num${memberNum}" id="num_tip_${memberNum}" placeholder="チップ枚数"></td>`)
         document.querySelector(`#name${memberNum-1}`).parentNode.insertAdjacentHTML("afterend",`<th><input type="text" class="name" id="name${memberNum}" placeholder="player${memberNum+1}"></th>`)
         document.querySelector(`#scores`).insertAdjacentHTML("beforeend",`<td><p class="score" id="score${memberNum}">0</p></td>`)
         document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input class="place" id="place${memberNum}"></input></td>`)
@@ -824,6 +861,7 @@ body > a button{
             document.querySelector(`#num${memberNum-1}_${i}`).parentNode.insertAdjacentHTML("afterend",`<td><input type="number" class="num num${memberNum}" id="num${memberNum}_${i}"></td>`)
 
         }
+        document.querySelector("#row_tip").insertAdjacentHTML("beforeend",`<td><input type="number" class="num num${memberNum}" id="num_tip_${memberNum}" placeholder="チップ枚数"></td>`)
         document.querySelector(`#name${memberNum-1}`).parentNode.insertAdjacentHTML("afterend",`<th><input type="text" class="name" id="name${memberNum}" placeholder="player${memberNum+1}"></th>`)
         document.querySelector(`#scores`).insertAdjacentHTML("beforeend",`<td><p class="score" id="score${memberNum}">0</p></td>`)
         document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input class="place" id="place${memberNum}"></input></td>`)
