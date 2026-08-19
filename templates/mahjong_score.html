@@ -446,9 +446,9 @@ body > a button{
 <body>
     <div class="header">
         <h1>麻雀スコア表</h1>
-        <p id="showNotice" onclick="showNotice()">？</p>
+        <p id="showNoticeButton">？</p>
     </div>
-    <p id="version">ver1.2.2</p>
+    <p id="version">ver1.3.1</p>
     <div class="notice" hidden>
         <h1>基本的な使い方</h1>
         <ol>
@@ -456,9 +456,18 @@ body > a button{
             <li>レートを事前に入力する</li>
             <li>ウマオカを適用する場合は設定ボタンから設定</li>
             <li>ゲームが終了したら得点を100点単位で入力(35000点なら350)<br>※参加していない人の欄は空欄に</li>
+            <li>チップは増減で記入 New!</li>
             <li>場代を払った人の列に金額を入力する</li>
             <li>下に表示される通りにやり取りをする</li>
         </ol>
+        <h1>ver1.3.1リリースノート</h1>
+        <ul>
+            <li>より強力な同期でデータの誤上書きを防止</li>
+            <li>一定時間ごとに最新の値に更新</li>
+            <li>チップを増減で記入するように変更</li>
+            <li>debugモードの導入</li>
+            <li>より安定した動作</li>
+        </ul>
         <h1>ver1.2.2リリースノート</h1>
         <ul>
             <li>チップ計算に対応</li>
@@ -480,7 +489,7 @@ body > a button{
         </ul>
     </div>
     <div class="buttons">
-        <button onclick= 'urlCopy()'>URLをコピー</button>
+        <button id="urlCopyButton">URLをコピー</button>
         <a href="{{url_for('home')}}"><button>新規ページ</button></a>
     </div>
     <div class="settings">
@@ -503,8 +512,8 @@ body > a button{
                 <option value="other">その他</option>
             </select>
             <p><input type="number" name="okainp" class="settinginp" id="okainp0" placeholder="その他 ex.)15000"></p>
-            <p><button class="settingButton" onclick="settingSubmit(0)">決定</button></p>
-            <p><button class="settingButton" onclick="settingSubmitAll(0)">すべてに適用</button></p>
+            <p><button class="settingButton" id="settingSubmitButton0" >決定</button></p>
+            <p><button class="settingButton" id="settingSubmitAllButton0" >すべてに適用</button></p>
         </div>
         <div class="setting" id="setting1" hidden>
             <h2>ウマ2</h2>
@@ -525,8 +534,8 @@ body > a button{
                 <option value="other">その他</option>
             </select>
             <p><input type="number" name="okainp" class="settinginp" id="okainp1" placeholder="その他"></p>
-            <p><button class="settingButton" onclick="settingSubmit(1)">決定</button></p>
-            <p><button class="settingButton" onclick="settingSubmitAll(1)">すべてに適用</button></p>
+            <p><button class="settingButton" id="settingSubmitButton1" >決定</button></p>
+            <p><button class="settingButton" id="settingSubmitAllButton1" >すべてに適用</button></p>
         </div>
     </div>
     <table>
@@ -537,7 +546,8 @@ body > a button{
             <th><input type="text" class="name" id="name1" placeholder="player2"></th>
             <th><input type="text" class="name" id="name2" placeholder="player3"></th>
             <th><input type="text" class="name" id="name3" placeholder="player4"></th>
-            <th><button class="addMemberButton" onclick="addMember()">+</button></th>
+            <th><button class="addMemberButton" id="addMemberButton" >+</button></th>
+            <th><input type="checkbox" id="debugOn"></th>
         </tr>
         <tr id="row0">
             <td><input type="number" class="num rate" id="rate_0"></td>
@@ -545,7 +555,8 @@ body > a button{
             <td><input type="number" class="num num1" id="num1_0"></td>
             <td><input type="number" class="num num2" id="num2_0"></td>
             <td><input type="number" class="num num3" id="num3_0"></td>
-            <td><button class="settingButton" onclick="setting(0)">設定</button></td>
+            <td><button class="settingButton" id="settingOpenButton0" >設定</button></td>
+            <td><p id="debug0"></p></td>
         </tr>
         <tr id="row1">
             <td><input type="number" class="num rate" id="rate_1"></td>
@@ -553,14 +564,15 @@ body > a button{
             <td><input type="number" class="num num1" id="num1_1"></td>
             <td><input type="number" class="num num2" id="num2_1"></td>
             <td><input type="number" class="num num3" id="num3_1"></td>
-            <td><button  class="settingButton" onclick="setting(1)">設定</button></td>
+            <td><button  class="settingButton" id="settingOpenButton1" >設定</button></td>
+            <td><p id="debug1"></p></td>
         </tr>
         <tr id="row_tip">
             <td><input type="number" class="num rate" id="rate_tip" value="100"></td>
-            <td><input type="number" class="num num0" id="num_tip_0" placeholder="チップ枚数"></td>
-            <td><input type="number" class="num num1" id="num_tip_1" placeholder="チップ枚数"></td>
-            <td><input type="number" class="num num2" id="num_tip_2" placeholder="チップ枚数"></td>
-            <td><input type="number" class="num num3" id="num_tip_3" placeholder="チップ枚数"></td>
+            <td><input type="number" class="num num0" id="num_tip_0" placeholder="チップ増減"></td>
+            <td><input type="number" class="num num1" id="num_tip_1" placeholder="チップ増減"></td>
+            <td><input type="number" class="num num2" id="num_tip_2" placeholder="チップ増減"></td>
+            <td><input type="number" class="num num3" id="num_tip_3" placeholder="チップ増減"></td>
         </tr>
         <tr id="scores">
             <td>sum:</td>
@@ -571,14 +583,14 @@ body > a button{
         </tr>
         <tr id="place">
             <td>場代</td>
-            <td><input class="place" id="place0"></input></td>
-            <td><input class="place" id="place1"></input></td>
-            <td><input class="place" id="place2"></input></td>
-            <td><input class="place" id="place3"></input></td>
+            <td><input class="place" id="place0" type="number"></input></td>
+            <td><input class="place" id="place1" type="number"></input></td>
+            <td><input class="place" id="place2" type="number"></input></td>
+            <td><input class="place" id="place3" type="number"></input></td>
         </tr>
     </tbody>
     </table>
-    <button onclick="addRow()">Add row</button>
+    <button id="addRowButton" >Add row</button>
     <div class="pay">
         <div class="paySentences"><p><span class="payName" id="payName0"></span>⇒<span class="paidName" id="paidName0"></span>：￥<span class="payMount" id="payAmount0"></span></p></div>
         <div class="paySentences"><p><span class="payName" id="payName1"></span>⇒<span class="paidName" id="paidName1"></span>：￥<span class="payMount" id="payAmount1"></span></p></div>
@@ -588,7 +600,8 @@ body > a button{
         <p id="copyRightPara">© 2026 Kai Mizuno</p>
     </div>
 <script>
-    const defaultTip = 20
+    const defaultTip = 0
+    const timeout = 180000
     let maxRow = 2
     let memberNum = 4
     let uma = [[0,0,0,0],[0,0,0,0]]
@@ -619,7 +632,6 @@ body > a button{
                 else{
                     points.push(-10000)
                 }
-                console.log("RANK",i,j,point,point==="")
             }
             rank = points.map(e=> e? [...points].sort((a,b)=>b-a).indexOf(e):false)
 
@@ -639,7 +651,6 @@ body > a button{
             })
             ranks.push(rank2)
         }
-        console.log("statusList",statusList,ranks)
 
 
         //sum score
@@ -675,7 +686,6 @@ body > a button{
                 else{
                     point2 = 0
                 }
-                console.log("SC",i,j,point2,point,document.querySelector(`#num${i}_${j}`).value==="")
                 sumPoint += rate * point2
             }
 
@@ -720,34 +730,43 @@ body > a button{
         else{
             document.querySelectorAll("#row_tip input").forEach(e=>e.classList.add("error"))
         }
-        console.log("TIP",sumTip,numTipInput,defaultTip)
         sendData()
         payCalc()
     }
 
     function addRow(){
-        tr = document.createElement("tr")
-        tr.id = `row${maxRow}`
-        td = document.createElement("td")
-        input = document.createElement("input")
-        input.type = "number"
-        input.className = "num rate"
-        input.id = `rate_${maxRow}`
-        input.addEventListener("input",scoreCheck)
-        td.appendChild(input)
-        tr.appendChild(td)
-        for (let i=0; i<memberNum; i++){
-            td = document.createElement("td")
-            input = document.createElement("input")
-            input.type = "number"
-            input.className = `num num${i}`
-            input.id = `num${i}_${maxRow}`
-            input.addEventListener("input",scoreCheck)
-            td.appendChild(input)
-            tr.appendChild(td)
-        }
-        tr.insertAdjacentHTML("beforeend",'<td><button class="settingButton" onclick="setting(0)">設定</button></td>')
-        document.querySelector("tbody").insertBefore(tr,document.querySelector("#row_tip"))
+        //tr = document.createElement("tr")
+        //tr.id = `row${maxRow}`
+        //td = document.createElement("td")
+        //input = document.createElement("input")
+        //input.type = "number"
+        //input.className = "num rate"
+        //input.id = `rate_${maxRow}`
+        //input.addEventListener("input",scoreCheck)
+        //td.appendChild(input)
+        //tr.appendChild(td)
+        //for (let i=0; i<memberNum; i++){
+        //    td = document.createElement("td")
+        //    input = document.createElement("input")
+        //    input.type = "number"
+        //    input.className = `num num${i}`
+        //    input.id = `num${i}_${maxRow}`
+        //    input.addEventListener("input",scoreCheck)
+        //    td.appendChild(input)
+        //    tr.appendChild(td)
+        //}
+        //tr.insertAdjacentHTML("beforeend",'<td><button class="settingButton" onclick="setting(0)">設定</button></td>')
+        ///document.querySelector("tbody").insertBefore(tr,document.querySelector("#row_tip"))
+        document.querySelector("#row_tip").insertAdjacentHTML("beforeBegin",`
+        <tr id="row${maxRow}">
+            <td><input type="number" class="num rate" id="rate_${maxRow}"></td>
+            <td><input type="number" class="num num0" id="num0_${maxRow}"></td>
+            <td><input type="number" class="num num1" id="num1_${maxRow}"></td>
+            <td><input type="number" class="num num2" id="num2_${maxRow}"></td>
+            <td><input type="number" class="num num3" id="num3_${maxRow}"></td>
+            <td><button  class="settingButton" id="settingOpenButton${maxRow}" >設定</button></td>
+            <td><p id="debug${maxRow}"></p></td>
+        </tr>`)
 
         document.querySelector(".settings").insertAdjacentHTML("beforeend",`<div class="setting" id="setting${maxRow}" hidden>
             <h2>ウマ</h2>
@@ -768,8 +787,20 @@ body > a button{
                 <option value="other">その他</option>
             </select>
             <p><input type="number" name="okainp" class="settinginp" id="okainp${maxRow}" placeholder="その他"></p>
-            <p><button onclick="settingSubmit(${maxRow})" class="settingButton">決定</button></p>
+            <p><button class="settingButton" id="settingSubmitButton${maxRow}">決定</button></p>
+            <p><button class="settingButton" id="settingSubmitAllButton${maxRow}">すべてに適用</button></p>
         </div>`)
+
+        document.querySelector(`#settingSubmitButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: settingSubmit})
+        document.querySelector(`#settingSubmitAllButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: settingSubmitAll})
+        document.querySelector(`#settingOpenButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: setting})
+        document.querySelector(`#row${maxRow}`).querySelectorAll("input").forEach(e=> e.addEventListener("input",() => {
+            console.log(`${maxRow}input`)
+            sendData()
+            payCalc()
+            scoreCheck()
+        }))
+        
 
         uma.push(umaDefo)
         uma3.push(uma3Defo)
@@ -777,31 +808,43 @@ body > a button{
 
         maxRow++
         scoreCheck()
+        settingInput()
+        
+        console.log("AddRow")
     }
 
     function firstAddRow(){
-        tr = document.createElement("tr")
-        tr.id = `row${maxRow}`
-        td = document.createElement("td")
-        input = document.createElement("input")
-        input.type = "number"
-        input.className = "num rate"
-        input.id = `rate_${maxRow}`
-        input.addEventListener("input",scoreCheck)
-        td.appendChild(input)
-        tr.appendChild(td)
-        for (let i=0; i<memberNum; i++){
-            td = document.createElement("td")
-            input = document.createElement("input")
-            input.type = "number"
-            input.className = `num num${i}`
-            input.id = `num${i}_${maxRow}`
-            input.addEventListener("input",scoreCheck)
-            td.appendChild(input)
-            tr.appendChild(td)
-        }
-        tr.insertAdjacentHTML("beforeend",'<td><button class="settingButton" onclick="setting(0)">設定</button></td>')
-        document.querySelector("tbody").insertBefore(tr,document.querySelector("#row_tip"))
+        ///tr = document.createElement("tr")
+        ///tr.id = `row${maxRow}`
+        ///td = document.createElement("td")
+        ///input = document.createElement("input")
+        ///input.type = "number"
+        ///input.className = "num rate"
+        ///input.id = `rate_${maxRow}`
+        ///input.addEventListener("input",scoreCheck)
+        ///td.appendChild(input)
+        ///tr.appendChild(td)
+        ///for (let i=0; i<memberNum; i++){
+        ///    td = document.createElement("td")
+        ///    input = document.createElement("input")
+        ///    input.type = "number"
+        ///    input.className = `num num${i}`
+        ///    input.id = `num${i}_${maxRow}`
+        ///    input.addEventListener("input",scoreCheck)
+        ///    td.appendChild(input)
+        ///    tr.appendChild(td)
+        ///}
+        ///tr.insertAdjacentHTML("beforeend",'<td><button class="settingButton" onclick="setting(0)">設定</button></td>')
+        document.querySelector("#row_tip").insertAdjacentHTML("beforebegin",`
+        <tr id="row${maxRow}">
+            <td><input type="number" class="num rate" id="rate_${maxRow}"></td>
+            <td><input type="number" class="num num0" id="num0_${maxRow}"></td>
+            <td><input type="number" class="num num1" id="num1_${maxRow}"></td>
+            <td><input type="number" class="num num2" id="num2_${maxRow}"></td>
+            <td><input type="number" class="num num3" id="num3_${maxRow}"></td>
+            <td><button  class="settingButton" id="settingOpenButton${maxRow}" >設定</button></td>
+            <td><p id="debug${maxRow}"></p></td>
+        </tr>`)
 
         document.querySelector(".settings").insertAdjacentHTML("beforeend",`<div class="setting" id="setting${maxRow}" hidden>
             <h2>ウマ</h2>
@@ -822,14 +865,25 @@ body > a button{
                 <option value="other">その他</option>
             </select>
             <p><input type="number" name="okainp" class="settinginp" id="okainp${maxRow}" placeholder="その他"></p>
-            <p><button onclick="settingSubmit(${maxRow})" class="settingButton">決定</button></p>
+            <p><button class="settingButton" id="settingSubmitButton${maxRow}">決定</button></p>
+            <p><button class="settingButton" id="settingSubmitAllButton${maxRow}">すべてに適用</button></p>
         </div>`)
+
+        document.querySelector(`#settingSubmitButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: settingSubmit})
+        document.querySelector(`#settingSubmitAllButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: settingSubmitAll})
+        document.querySelector(`#settingOpenButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: setting})
+        document.querySelector(`#row${maxRow}`).querySelectorAll("input").forEach(e => e.addEventListener("input",() => {
+            sendData()
+            payCalc()
+            scoreCheck()
+        }))
 
         uma.push(umaDefo)
         uma3.push(uma3Defo)
         oka.push(okaDefo)
 
         maxRow++
+        console.log("FirstAddRow")
     }
     function addMember(){
         //<th><input type="text" class="name" id="name3" placeholder="player4"></th>
@@ -875,9 +929,13 @@ body > a button{
     }
 
     function setting(num){
-        document.querySelector(`#setting${num}`).hidden = false
+        console.log(`setting activated ${this.num}`)
+        document.querySelector(`#setting${this.num}`).hidden = false
     }
+
     function settingSubmit(num){
+        num = this.num
+
         document.querySelector(`#setting${num}`).hidden = true
         umainp = document.querySelector(`#umainp${num}`).value
         okainp = parseInt(document.querySelector(`#okainp${num}`).value)
@@ -905,7 +963,31 @@ body > a button{
     }
 
     function settingSubmitAll(num){
-        settingSubmit(num)
+        num = this.num
+
+        document.querySelector(`#setting${num}`).hidden = true
+
+        umainp = document.querySelector(`#umainp${num}`).value
+        okainp = parseInt(document.querySelector(`#okainp${num}`).value)
+
+        if(umainp){
+            umaPre = umainp.split("_").map(e=>parseInt(e)*10)
+            uma[num] = [umaPre[1],umaPre[0],-umaPre[0],-umaPre[1]]
+            uma3[num] = [umaPre[0]+umaPre[1],-umaPre[0],-umaPre[1]]
+        }
+        else{
+            umaPre = document.querySelector(`#uma${num}`).value.split("_").map(e=>parseInt(e)*10)
+            uma[num] = [umaPre[1],umaPre[0],-umaPre[0],-umaPre[1]]
+            uma3[num] = [umaPre[0]+umaPre[1],-umaPre[0],-umaPre[1]]
+        }
+
+        if(okainp){
+            oka[num] = okainp/100
+        }
+        else{
+            oka[num] = parseInt(document.querySelector(`#oka${num}`).value)
+        }
+        
         umaDefo = uma[num]
         uma3Defo = uma3[num]
         okaDefo = oka[num]
@@ -921,11 +1003,15 @@ body > a button{
         datas = []
         names = []
         points = []
+        tips = []
         places = []
         settings = [uma,oka]
         document.querySelectorAll(".name").forEach(e => {
             names.push(e.value)
         });
+        document.querySelectorAll("#row_tip input").forEach(e => {
+            tips.push(e.value)
+        })
         document.querySelectorAll(".place").forEach(e => {
             places.push(e.value)
         });
@@ -937,14 +1023,13 @@ body > a button{
             }
             points.push(nums)
         }
-        datas = [names,points,settings,places]
-        console.log("sendData",points)
+        datas = [names,points,tips,settings,places]
         res = await fetch("{{url_for('send_data',page_id=page_id)}}",{
             "method":"POST",
             "headers":{"Content-Type":"application/json"},
             "body":JSON.stringify(datas)
         })
-        console.log(res)
+        //console.log(res)
     }
 
 
@@ -969,6 +1054,8 @@ body > a button{
                 document.querySelector(`#okainp${i}`).value = oka[i]*100
             }
 
+            document.querySelector(`#debug${i}`).innerHTML = uma[i].slice(0,2) + " ;" + oka[i]
+            document.querySelector(`#debug${i}`).hidden = !document.querySelector("#debugOn").checked
         }
     }
 
@@ -980,7 +1067,12 @@ body > a button{
     document.addEventListener("DOMContentLoaded",()=>{
         datas = {{datas | tojson}}
         console.log("DOM",datas)
+        refreshVals(datas)
+        addEventHandler()
+        repearLoadValue()
+    })
 
+    function refreshVals(datas){
         maxRow_max = datas[1].length
         maxRow_org = maxRow
 
@@ -995,16 +1087,19 @@ body > a button{
             firstaddMember()
         }
 
-        uma = datas[2][0]
+        uma = datas[3][0]
         uma3 = uma.map(e=>[e[0]+e[1],e[2],e[3]])
-        oka = datas[2][1]
+        oka = datas[3][1]
 
         settingInput()
-        addEventHandler()
+        //addEventHandler()
 
         for(let i=0; i<memberNum; i++){
             document.querySelectorAll(".name")[i].value = datas[0][i]
-            document.querySelectorAll(".place")[i].value = datas[3][i]
+            document.querySelectorAll(".place")[i].value = datas[4][i]
+        }
+        for(let i=0; i<datas[2].length; i++){
+            document.querySelectorAll("#row_tip input")[i].value = datas[2][i]
         }
         for(let i=0; i<datas[1].length; i++){
             document.querySelector(`#rate_${i}`).value = datas[1][i][0]
@@ -1013,25 +1108,38 @@ body > a button{
             }
         }
         scoreCheck()
-    })
+    }
 
     function addEventHandler(){
         document.querySelectorAll(".num").forEach(e=>{
             e.addEventListener("input",()=>{
+                sendData()
+                payCalc()
                 scoreCheck()
+            })
+            e.addEventListener("focus",() => {
+                loadValue()
             })
         })
         document.querySelectorAll(".name").forEach(e=>{
             e.addEventListener("input",()=>{
                 sendData()
                 payCalc()
+                scoreCheck()
+            })
+            e.addEventListener("focus",() => {
+                loadValue()
             })
         })
         document.querySelectorAll(".place").forEach(e=>{
             e.addEventListener("input",()=>{
                 sendData()
                 payCalc()
+                scoreCheck()
                 })
+            e.addEventListener("focus",() => {
+                loadValue()
+            })
         })
     }
 
@@ -1096,7 +1204,6 @@ body > a button{
             }
         }
 
-        console.log("pays",pays,depts)
 
         if(pays.length == 0){
             document.querySelector(".pay").hidden = true
@@ -1122,6 +1229,55 @@ body > a button{
         document.querySelector('.notice').hidden = !document.querySelector('.notice').hidden
         document.querySelector("#showNotice").classList.toggle("show")
     }
+
+    async function loadValue(){
+        url = "{{url_for('load_data', page_id = page_id)}}"
+        
+        responsList = await fetch(url,{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        responsJson = await responsList.json()
+
+        console.log("loadval",responsJson)
+        refreshVals(responsJson)
+    }
+
+    async function repearLoadValue(){
+        url = "{{url_for('load_data', page_id = page_id)}}"
+        
+        responsList = await fetch(url,{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        responsJson = await responsList.json()
+
+        console.log("loadval",responsJson)
+        refreshVals(responsJson)
+        
+        setTimeout(() => {
+            repearLoadValue() 
+        }, timeout);
+    }
+
+
+        document.querySelector("#showNoticeButton").addEventListener("click",showNotice)
+        document.querySelector("#urlCopyButton").addEventListener("click",urlCopy)
+        document.querySelector("#settingSubmitButton0").addEventListener("click", {num: 0, handleEvent: settingSubmit})
+        document.querySelector("#settingSubmitAllButton0").addEventListener("click", {num: 0, handleEvent: settingSubmitAll})
+        document.querySelector("#settingSubmitButton1").addEventListener("click", {num: 1, handleEvent: settingSubmit})
+        document.querySelector("#settingSubmitAllButton1").addEventListener("click", {num: 1, handleEvent: settingSubmitAll})
+        document.querySelector("#addMemberButton").addEventListener("click", addMember)
+        document.querySelector("#settingOpenButton0").addEventListener("click", {num: 0, handleEvent: setting})
+        document.querySelector("#settingOpenButton1").addEventListener("click", {num: 1, handleEvent: setting})
+        document.querySelector("#addRowButton").addEventListener("click", addRow)
+        document.querySelector("#debugOn").addEventListener("change", settingInput)
 </script>
 </body>
 </html>
