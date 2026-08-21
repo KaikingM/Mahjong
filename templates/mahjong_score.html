@@ -199,6 +199,18 @@ table input{
     font-size:15px;
 }
 
+/* Debug checkbox */
+#debugOn{
+    width:16px;
+    height:16px;
+    min-width:16px;
+    min-height:16px;
+    padding:0;
+    margin:0;
+    cursor:pointer;
+    accent-color:#4f8cff;
+}
+
 .name{
     min-width:96px;
 }
@@ -757,6 +769,15 @@ body > a button{
         //}
         //tr.insertAdjacentHTML("beforeend",'<td><button class="settingButton" onclick="setting(0)">設定</button></td>')
         ///document.querySelector("tbody").insertBefore(tr,document.querySelector("#row_tip"))
+        htmlContentHead = `<tr id="row${maxRow}">
+            <td><input type="number" class="num rate" id="rate_${maxRow}"></td>`
+        htmlContentFoot = `<td><button  class="settingButton" id="settingOpenButton${maxRow}" >設定</button></td>
+            <td><p id="debug${maxRow}"></p></td>
+            </tr>`
+        htmlContentMiddle = ""
+        for(let i=0; i<memberNum; i++){
+            htmlContentMiddle += `<td><input type="number" class="num num${i}" id="num0_${maxRow}"></td>`
+        }
         document.querySelector("#row_tip").insertAdjacentHTML("beforeBegin",`
         <tr id="row${maxRow}">
             <td><input type="number" class="num rate" id="rate_${maxRow}"></td>
@@ -1054,7 +1075,7 @@ body > a button{
                 document.querySelector(`#okainp${i}`).value = oka[i]*100
             }
 
-            document.querySelector(`#debug${i}`).innerHTML = uma[i].slice(0,2) + " ;" + oka[i]
+            document.querySelector(`#debug${i}`).innerHTML = uma[i].slice(0,2) + ":" + oka[i]
             document.querySelector(`#debug${i}`).hidden = !document.querySelector("#debugOn").checked
         }
     }
@@ -1213,12 +1234,14 @@ body > a button{
         }
 
         for(let i=0; i<memberNum-1; i++){
-            document.querySelector(`#payName${i}`).textContent = ""
-            document.querySelector(`#paidName${i}`).textContent = ""
-            document.querySelector(`#payAmount${i}`).textContent = ""
+            ///document.querySelector(`#payName${i}`).textContent = ""
+            ///document.querySelector(`#paidName${i}`).textContent = ""
+            ///document.querySelector(`#payAmount${i}`).textContent = ""
+            document.querySelectorAll(".paySentences")[i].hidden = true
         }
 
         for(let i in pays){
+            document.querySelectorAll(".paySentences")[i].hidden = false
             document.querySelector(`#payName${i}`).textContent = document.querySelector(`#name${pays[i][0]}`).value? document.querySelector(`#name${pays[i][0]}`).value : `player${parseInt(pays[i][0])+1}`
             document.querySelector(`#paidName${i}`).textContent = document.querySelector(`#name${pays[i][1]}`).value? document.querySelector(`#name${pays[i][1]}`).value : `player${parseInt(pays[i][1])+1}`
             document.querySelector(`#payAmount${i}`).textContent = pays[i][2]

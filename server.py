@@ -1,13 +1,26 @@
-from flask import Flask,url_for,redirect,render_template,request
+from flask import Flask,url_for,redirect,render_template,request,abort,session
 import random
 import string
 import time
 import json
 import hashlib
+import os
+from dotenv import load_dotenv
+from werkzeug.security import check_password_hash
+import secrets
 
 pages = {} #id: [names,pages,settings]
 app = Flask(__name__)
 
+app.config["SECRET_KEY"] = os.environ["FLASK_SECRET_KEY"]
+app.config.update(
+    SECRET_KEY=os.environ["FLASK_SECRET_KEY"],
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+)
+
+master_url_salt = secrets.token_hex(32)
 reload_sec = 86400
 
 def del_page():
@@ -27,7 +40,6 @@ def log_write(*content):
 
 @app.route("/")
 def home():
-    del_page()
     page_id = "".join([random.choice(string.ascii_letters+string.digits) for i in range(5)])
     while page_id in pages.keys():
         page_id = "".join([random.choice(string.ascii_letters+string.digits) for i in range(5)])
@@ -38,7 +50,6 @@ def home():
 
 @app.route("/p/<page_id>/")
 def page(page_id):
-    del_page()
     if page_id in pages.keys():
         log_write(page_id, pages[page_id])
         pages[page_id][5] = time.time()
@@ -48,7 +59,6 @@ def page(page_id):
 
 @app.route("/data/<page_id>/",methods = ["POST"])
 def send_data(page_id):
-    del_page()
     try:
         datas = request.json
         datas.append(time.time())
@@ -63,18 +73,35 @@ def load_data(page_id):
     print(pages[page_id])
     return ret
 
-@app.route("/master/", methods = ["POST","GET"])
+@app.route("/analysis/",methods = ["GET", "POST"])
+def analysis():
+    return render_template("analysis.html")
+
+@app.route(f"/master_acces/", methods = ["POST","GET"])
 def master_access():
     if request.method == "POST":
-        print(request.form.get("pass"))
-        if hashlib.sha256(request.form.get("pass").encode("utf-8")).hexdigest() == "52cb412a854716ee65c9ad1065a4ed1861bab4c05bceed184cef51f78e8101b3":
-            with open("log.txt", mode="r") as f:
-                print(f.read())
-                return render_template("master.html", pages = f.read())
-        else:
-            return redirect(url_for("home"))
+        password = request.form.get("pass","")
+        password_hash = os.environ("MASTER_PASSWORD_HASH")
+
+        if not check_password_hash(password_hash, password):
+            return redirect("home")
+
+        session.clear()
+        session["is_master"] = True
+        return redirect(url_for("master"))
     else:
         return render_template("master_access.html")
+
+@app.route(f"/master/{master_url_salt}/",methods = ["POST", "GET"])
+def master():
+    if not session.get("is_master"):
+        abort(404)
+    return render_template("master.html")
+
+@app.route("/master/logout/")
+def master_logout():
+    session.clear()
+    return redirect("home")
 
 if __name__=="__main__":
     app.run(debug=True)
