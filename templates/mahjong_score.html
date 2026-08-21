@@ -928,7 +928,7 @@ body > a button{
         document.querySelector("#row_tip").insertAdjacentHTML("beforeend",`<td><input type="number" class="num num${memberNum}" id="num_tip_${memberNum}" placeholder="チップ増減"></td>`)
         document.querySelector(`#name${memberNum-1}`).parentNode.insertAdjacentHTML("afterend",`<th><input type="text" class="name" id="name${memberNum}" placeholder="player${memberNum+1}"></th>`)
         document.querySelector(`#scores`).insertAdjacentHTML("beforeend",`<td><p class="score" id="score${memberNum}">0</p></td>`)
-        document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input class="place" id="place${memberNum}"></input></td>`)
+        document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input type="number" class="place" id="place${memberNum}"></input></td>`)
         document.querySelector(".pay").insertAdjacentHTML("beforeend",`<div class="paySentences"><p><span class="payName" id="payName${memberNum-1}"></span>⇒<span class="paidName" id="paidName${memberNum-1}"></span>：￥<span class="payMount" id="payAmount${memberNum-1}"></span></p></div>`)
 
         addEventHandler()
@@ -949,7 +949,7 @@ body > a button{
         document.querySelector("#row_tip").insertAdjacentHTML("beforeend",`<td><input type="number" class="num num${memberNum}" id="num_tip_${memberNum}" placeholder="チップ増減"></td>`)
         document.querySelector(`#name${memberNum-1}`).parentNode.insertAdjacentHTML("afterend",`<th><input type="text" class="name" id="name${memberNum}" placeholder="player${memberNum+1}"></th>`)
         document.querySelector(`#scores`).insertAdjacentHTML("beforeend",`<td><p class="score" id="score${memberNum}">0</p></td>`)
-        document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input class="place" id="place${memberNum}"></input></td>`)
+        document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input type="number" class="place" id="place${memberNum}"></input></td>`)
         document.querySelector(".pay").insertAdjacentHTML("beforeend",`<div class="paySentences"><p><span class="payName" id="payName${memberNum-1}"></span>⇒<span class="paidName" id="paidName${memberNum-1}"></span>：￥<span class="payMount" id="payAmount${memberNum-1}"></span></p></div>`)
 
         //uma.push(umaDefo)
