@@ -776,18 +776,19 @@ body > a button{
             </tr>`
         htmlContentMiddle = ""
         for(let i=0; i<memberNum; i++){
-            htmlContentMiddle += `<td><input type="number" class="num num${i}" id="num0_${maxRow}"></td>`
+            htmlContentMiddle += `<td><input type="number" class="num num${i}" id="num${i}_${maxRow}"></td>`
         }
-        document.querySelector("#row_tip").insertAdjacentHTML("beforeBegin",`
-        <tr id="row${maxRow}">
-            <td><input type="number" class="num rate" id="rate_${maxRow}"></td>
-            <td><input type="number" class="num num0" id="num0_${maxRow}"></td>
-            <td><input type="number" class="num num1" id="num1_${maxRow}"></td>
-            <td><input type="number" class="num num2" id="num2_${maxRow}"></td>
-            <td><input type="number" class="num num3" id="num3_${maxRow}"></td>
-            <td><button  class="settingButton" id="settingOpenButton${maxRow}" >設定</button></td>
-            <td><p id="debug${maxRow}"></p></td>
-        </tr>`)
+        document.querySelector("#row_tip").insertAdjacentHTML("beforeBegin", htmlContentHead + htmlContentMiddle + htmlContentFoot)
+        console.log(htmlContentHead+htmlContentMiddle+htmlContentFoot)
+        ///<tr id="row${maxRow}">
+        ///    <td><input type="number" class="num rate" id="rate_${maxRow}"></td>
+        ///    <td><input type="number" class="num num0" id="num0_${maxRow}"></td>
+        ///    <td><input type="number" class="num num1" id="num1_${maxRow}"></td>
+        ///    <td><input type="number" class="num num2" id="num2_${maxRow}"></td>
+        ///    <td><input type="number" class="num num3" id="num3_${maxRow}"></td>
+        ///    <td><button  class="settingButton" id="settingOpenButton${maxRow}" >設定</button></td>
+        ///    <td><p id="debug${maxRow}"></p></td>
+        ///</tr>`)
 
         document.querySelector(".settings").insertAdjacentHTML("beforeend",`<div class="setting" id="setting${maxRow}" hidden>
             <h2>ウマ</h2>
@@ -856,16 +857,25 @@ body > a button{
         ///    tr.appendChild(td)
         ///}
         ///tr.insertAdjacentHTML("beforeend",'<td><button class="settingButton" onclick="setting(0)">設定</button></td>')
-        document.querySelector("#row_tip").insertAdjacentHTML("beforebegin",`
-        <tr id="row${maxRow}">
-            <td><input type="number" class="num rate" id="rate_${maxRow}"></td>
-            <td><input type="number" class="num num0" id="num0_${maxRow}"></td>
-            <td><input type="number" class="num num1" id="num1_${maxRow}"></td>
-            <td><input type="number" class="num num2" id="num2_${maxRow}"></td>
-            <td><input type="number" class="num num3" id="num3_${maxRow}"></td>
-            <td><button  class="settingButton" id="settingOpenButton${maxRow}" >設定</button></td>
+        htmlContentHead = `<tr id="row${maxRow}">
+            <td><input type="number" class="num rate" id="rate_${maxRow}"></td>`
+        htmlContentFoot = `<td><button  class="settingButton" id="settingOpenButton${maxRow}" >設定</button></td>
             <td><p id="debug${maxRow}"></p></td>
-        </tr>`)
+            </tr>`
+        htmlContentMiddle = ""
+        for(let i=0; i<memberNum; i++){
+            htmlContentMiddle += `<td><input type="number" class="num num${i}" id="num${i}_${maxRow}"></td>`
+        }
+        document.querySelector("#row_tip").insertAdjacentHTML("beforeBegin", htmlContentHead + htmlContentMiddle + htmlContentFoot)
+        ///<tr id="row${maxRow}">
+        ///    <td><input type="number" class="num rate" id="rate_${maxRow}"></td>
+        ///    <td><input type="number" class="num num0" id="num0_${maxRow}"></td>
+        ///    <td><input type="number" class="num num1" id="num1_${maxRow}"></td>
+        ///    <td><input type="number" class="num num2" id="num2_${maxRow}"></td>
+        ///    <td><input type="number" class="num num3" id="num3_${maxRow}"></td>
+        ///    <td><button  class="settingButton" id="settingOpenButton${maxRow}" >設定</button></td>
+        ///    <td><p id="debug${maxRow}"></p></td>
+        ///</tr>`)
 
         document.querySelector(".settings").insertAdjacentHTML("beforeend",`<div class="setting" id="setting${maxRow}" hidden>
             <h2>ウマ</h2>
@@ -915,7 +925,7 @@ body > a button{
             document.querySelector(`#num${memberNum-1}_${i}`).parentNode.insertAdjacentHTML("afterend",`<td><input type="number" class="num num${memberNum}" id="num${memberNum}_${i}"></td>`)
 
         }
-        document.querySelector("#row_tip").insertAdjacentHTML("beforeend",`<td><input type="number" class="num num${memberNum}" id="num_tip_${memberNum}" placeholder="チップ枚数"></td>`)
+        document.querySelector("#row_tip").insertAdjacentHTML("beforeend",`<td><input type="number" class="num num${memberNum}" id="num_tip_${memberNum}" placeholder="チップ増減"></td>`)
         document.querySelector(`#name${memberNum-1}`).parentNode.insertAdjacentHTML("afterend",`<th><input type="text" class="name" id="name${memberNum}" placeholder="player${memberNum+1}"></th>`)
         document.querySelector(`#scores`).insertAdjacentHTML("beforeend",`<td><p class="score" id="score${memberNum}">0</p></td>`)
         document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input class="place" id="place${memberNum}"></input></td>`)
@@ -936,7 +946,7 @@ body > a button{
             document.querySelector(`#num${memberNum-1}_${i}`).parentNode.insertAdjacentHTML("afterend",`<td><input type="number" class="num num${memberNum}" id="num${memberNum}_${i}"></td>`)
 
         }
-        document.querySelector("#row_tip").insertAdjacentHTML("beforeend",`<td><input type="number" class="num num${memberNum}" id="num_tip_${memberNum}" placeholder="チップ枚数"></td>`)
+        document.querySelector("#row_tip").insertAdjacentHTML("beforeend",`<td><input type="number" class="num num${memberNum}" id="num_tip_${memberNum}" placeholder="チップ増減"></td>`)
         document.querySelector(`#name${memberNum-1}`).parentNode.insertAdjacentHTML("afterend",`<th><input type="text" class="name" id="name${memberNum}" placeholder="player${memberNum+1}"></th>`)
         document.querySelector(`#scores`).insertAdjacentHTML("beforeend",`<td><p class="score" id="score${memberNum}">0</p></td>`)
         document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input class="place" id="place${memberNum}"></input></td>`)
