@@ -1,4 +1,7 @@
-from flask import Flask,url_for,redirect,render_template,request,abort,session
+from flask import Flask,url_for,redirect,render_template,request,abort,session,jsonify
+from pathlib import Path
+from flask_sqlalchemy import SQLAlchemy
+import sqlite3
 import random
 import string
 import time
@@ -19,6 +22,162 @@ app.config.update(
     SESSION_COOKIE_SECURE=True,
     SESSION_COOKIE_SAMESITE="Lax",
 )
+
+#db = SQLAlchemy(app)
+db_path = Path("mahjong.db")
+
+def get_by_path(data, path):
+    current = data
+
+    for index in path:
+        current = current[index]
+
+    return current
+
+
+def set_by_path(data, path, new_value):
+    if not path:
+        raise ValueError("pathを空にはできません")
+
+    current = data
+
+    # 最後のindexの1つ手前まで移動
+    for index in path[:-1]:
+        current = current[index]
+
+    # 最後のindexの値を変更
+    current[path[-1]] = new_value
+
+def get_connection():
+    con = sqlite3.connect(db_path, timeout=10)
+    con.row_factory = sqlite3.Row
+    
+    return con
+
+def initialize_db():
+    db_path.parent.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    with get_connection() as con:
+        con.execute("""
+            CREATE TABLE IF NOT EXISTS pages (
+                page_id TEXT PRIMARY KEY,
+                revision INTEGER NOT NULL DEFAULT 0,
+                data TEXT NOT NULL
+            )
+        """
+        )
+
+def create_page_db(page_id, data):
+    data_json = json.dumps(data, ensure_ascii=False)
+
+    with get_connection() as con:
+        con.execute(
+            """
+            INSERT INTO pages(
+                page_id,
+                revision,
+                data
+            )
+            VALUES(?, 0, ?)
+            """,
+            (page_id,data_json)
+        )
+
+def load_page(page_id):
+    with get_connection() as con:
+        row = con.execute(
+            """
+            SELECT page_id, revision, data
+            FROM pages
+            WHERE page_id = ?
+            """,
+            (page_id,)
+        ).fetchone()
+
+    if row is None:
+        return None
+
+    return {
+        "page_id": row["page_id"],
+        "revision": row["revision"],
+        "data": json.loads(row["data"])
+    }
+
+def patch_page(
+    page_id,
+    path,
+    old_value,
+    new_value,
+    revision
+):
+    con = get_connection()
+
+    try:
+        con.execute("BEGIN IMMEDIATE")
+
+        row = con.execute(
+            """
+            SELECT revision, data
+            FROM pages
+            WHERE page_id = ?
+            """,
+            (page_id,)
+        ).fetchone()
+
+        if row is None:
+            return {
+                "ok": False,
+                "error": "not_found"
+            }, 404
+
+        data = json.loads(row["data"])
+        current_value = get_by_path(data, path)
+
+        if current_value != old_value:
+            con.rollback()
+
+            return {
+                "ok": False,
+                "error": "conflict",
+                "revision": row["revision"],
+                "current_value": current_value
+            }, 409
+
+        set_by_path(data, path, new_value)
+
+        new_revision = row["revision"] + 1
+
+        con.execute(
+            """
+            UPDATE pages
+            SET data = ?,
+                revision = ?,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE page_id = ?
+            """,
+            (
+                json.dumps(data, ensure_ascii=False),
+                new_revision,
+                page_id
+            )
+        )
+
+        con.commit()
+
+        return {
+            "ok": True,
+            "revision": new_revision
+        }, 200
+
+    except Exception:
+        con.rollback()
+        raise
+
+    finally:
+        con.close()
 
 master_url_salt = secrets.token_hex(32)
 reload_sec = 86400
@@ -45,6 +204,8 @@ def home():
         page_id = "".join([random.choice(string.ascii_letters+string.digits) for i in range(5)])
 
     pages[page_id] = [["","","",""],[["","","","",""],["","","","",""]],[100,"","","",""],[[[0,0,0,0],[0,0,0,0]],[0,0]],["","","",""],time.time()]
+
+    create_page_db(page_id, pages[page_id])
     
     return redirect(url_for("page",page_id = page_id))
 
@@ -53,6 +214,9 @@ def page(page_id):
     if page_id in pages.keys():
         log_write(page_id, pages[page_id])
         pages[page_id][5] = time.time()
+
+        print("fromDB",load_page(page_id))
+        
         return render_template("mahjong_score.html",datas = pages[page_id],page_id=page_id)
     else:
         return redirect(url_for("home"))
@@ -61,8 +225,10 @@ def page(page_id):
 def send_data(page_id):
     try:
         datas = request.json
+        print(datas)
         datas.append(time.time())
         pages[page_id] = datas
+        log_write(page_id,pages[page_id])
         return json.dumps("succes")
     except Exception as e:
         return json.dumps(e)
@@ -70,7 +236,7 @@ def send_data(page_id):
 @app.route("/load_data/<page_id>/", methods = ["POST"])
 def load_data(page_id):
     ret = json.dumps(pages[page_id])
-    print(pages[page_id])
+    #print(pages[page_id])
     return ret
 
 @app.route("/analysis/",methods = ["GET", "POST"])
@@ -104,4 +270,5 @@ def master_logout():
     return redirect("home")
 
 if __name__=="__main__":
+    initialize_db()
     app.run(debug=True)

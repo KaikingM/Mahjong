@@ -1103,43 +1103,6 @@ body > a button{
         repearLoadValue()
     })
 
-    function refreshVals(datas){
-        maxRow_max = datas[1].length
-        maxRow_org = maxRow
-
-        memberNum_max = datas[1][0].length
-        memberNum_org = memberNum
-
-        for(let i=0; i<maxRow_max-maxRow_org; i++){
-            firstAddRow()
-        }
-
-        for(let i=0; i<memberNum_max-memberNum_org-1; i++){
-            firstaddMember()
-        }
-
-        uma = datas[3][0]
-        uma3 = uma.map(e=>[e[0]+e[1],e[2],e[3]])
-        oka = datas[3][1]
-
-        settingInput()
-        //addEventHandler()
-
-        for(let i=0; i<memberNum; i++){
-            document.querySelectorAll(".name")[i].value = datas[0][i]
-            document.querySelectorAll(".place")[i].value = datas[4][i]
-        }
-        for(let i=0; i<datas[2].length; i++){
-            document.querySelectorAll("#row_tip input")[i].value = datas[2][i]
-        }
-        for(let i=0; i<datas[1].length; i++){
-            document.querySelector(`#rate_${i}`).value = datas[1][i][0]
-            for(let j=0; j<memberNum; j++){
-                document.querySelector(`#num${j}_${i}`).value = datas[1][i][j+1]
-            }
-        }
-        scoreCheck()
-    }
 
     function addEventHandler(){
         document.querySelectorAll(".num").forEach(e=>{
@@ -1277,6 +1240,44 @@ body > a button{
 
         console.log("loadval",responsJson)
         refreshVals(responsJson)
+    }
+
+    function refreshVals(datas){
+        maxRow_max = datas[1].length
+        maxRow_org = maxRow
+
+        memberNum_max = datas[1][0].length
+        memberNum_org = memberNum
+
+        for(let i=0; i<maxRow_max-maxRow_org; i++){
+            firstAddRow()
+        }
+
+        for(let i=0; i<memberNum_max-memberNum_org-1; i++){
+            firstaddMember()
+        }
+
+        uma = datas[3][0]
+        uma3 = uma.map(e=>[e[0]+e[1],e[2],e[3]])
+        oka = datas[3][1]
+
+        settingInput()
+        //addEventHandler()
+
+        for(let i=0; i<memberNum; i++){
+            document.querySelectorAll(".name")[i].value = datas[0][i]
+            document.querySelectorAll(".place")[i].value = datas[4][i]
+        }
+        for(let i=0; i<datas[2].length; i++){
+            document.querySelectorAll("#row_tip input")[i].value = datas[2][i]
+        }
+        for(let i=0; i<datas[1].length; i++){
+            document.querySelector(`#rate_${i}`).value = datas[1][i][0]
+            for(let j=0; j<memberNum; j++){
+                document.querySelector(`#num${j}_${i}`).value = datas[1][i][j+1]
+            }
+        }
+        scoreCheck()
     }
 
     async function repearLoadValue(){
