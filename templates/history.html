@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="jp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>履歴</title>
+</head>
+<style>
+    .date{
+        font-size: 15px;
+        color: gray;
+    }
+</style>
+<body>
+    <h1>全履歴</h1>
+    <p><input type="text"id="serchInp" placeholder="Serch from Member"> <input type="date" id="serchInpDate" oninput="alert(document.getElementById('serchInpDate').value)"></p>
+    {% for i in allRecord %}
+    <div class="record" id="{{i[0]}}">
+        <h2><a href="{{ url_for('page',page_id = i[0], _external = True)}}">{{i[0]}}</a> <span class="date">({{i[1]}})</span></h2>
+        <p class="members" id="members_{{i[0]}}">Member : {% for e in i[2][0] %} {{e}}{{"," if e != ""  else ""}} {% endfor %}</p>
+    </div>
+    {% endfor %}
+</body>
+<script>
+    document.getElementById("serchInp").addEventListener("input", ()=>{
+        document.querySelectorAll(".members").forEach(e => {
+            if (e.innerHTML.includes(document.getElementById("serchInp").value)){
+                e.parentElement.hidden = false
+            }
+            else{
+                e.parentElement.hidden = true
+            }
+        })
+    })
+</script>
+</html>

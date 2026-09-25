@@ -356,6 +356,23 @@ body > a button{
     background-color: #333;
 }
 
+#saveStatus{
+    font-size: 30px;
+    margin: 0;
+}
+
+#saveStatus.success{
+    color: rgb(0, 255, 0)
+}
+
+#saveStatus.wait{
+    color: orange;
+}
+
+#saveStatus.conflict{
+    color: red;
+}
+
 /* フェードイン */
 @keyframes fadeIn{
     from{
@@ -460,7 +477,8 @@ body > a button{
         <h1>麻雀スコア表</h1>
         <p id="showNoticeButton">？</p>
     </div>
-    <p id="version">ver1.3.1</p>
+    <p id="version">ver1.4.0</p>
+    <p id="saveStatus" class="success">●</p>
     <div class="notice" hidden>
         <h1>基本的な使い方</h1>
         <ol>
@@ -472,7 +490,7 @@ body > a button{
             <li>場代を払った人の列に金額を入力する</li>
             <li>下に表示される通りにやり取りをする</li>
         </ol>
-        <h1>ver1.3.1リリースノート</h1>
+        <h1>ver1.3.0リリースノート</h1>
         <ul>
             <li>より強力な同期でデータの誤上書きを防止</li>
             <li>一定時間ごとに最新の値に更新</li>
@@ -514,7 +532,7 @@ body > a button{
                 <option value="10_30">10_30</option>
                 <option value="other">その他</option>
             </select>
-            <p><input type="text" name="umainp" class="settinginp" id="umainp0" placeholder="その他 ex.)20_30"></p>
+            <p><input type="text" name="umainp" class="settinginp saveTarget" id="umainp0" placeholder="その他 ex.)20_30"></p>
             <h2>オカ</h2>
             <select name="oka" id="oka0">
                 <option value="0">0</option>
@@ -523,7 +541,7 @@ body > a button{
                 <option value="200">+20000返し</option>
                 <option value="other">その他</option>
             </select>
-            <p><input type="number" name="okainp" class="settinginp" id="okainp0" placeholder="その他 ex.)15000"></p>
+            <p><input type="number" name="okainp" class="settinginp saveTarget" id="okainp0" placeholder="その他 ex.)15000"></p>
             <p><button class="settingButton" id="settingSubmitButton0" >決定</button></p>
             <p><button class="settingButton" id="settingSubmitAllButton0" >すべてに適用</button></p>
         </div>
@@ -536,7 +554,7 @@ body > a button{
                 <option value="10_30">10_30</option>
                 <option value="other">その他</option>
             </select>
-            <p><input type="text" name="umainp" class="settinginp" id="umainp1" placeholder="その他 ex.)20_30"></p>
+            <p><input type="text" name="umainp" class="settinginp saveTarget" id="umainp1" placeholder="その他 ex.)20_30"></p>
             <h2>オカ</h2>
             <select name="oka" id="oka1">
                 <option value="0">0</option>
@@ -545,7 +563,7 @@ body > a button{
                 <option value="200">+20000返し</option>
                 <option value="other">その他</option>
             </select>
-            <p><input type="number" name="okainp" class="settinginp" id="okainp1" placeholder="その他"></p>
+            <p><input type="number" name="okainp" class="settinginp saveTarget" id="okainp1" placeholder="その他"></p>
             <p><button class="settingButton" id="settingSubmitButton1" >決定</button></p>
             <p><button class="settingButton" id="settingSubmitAllButton1" >すべてに適用</button></p>
         </div>
@@ -554,37 +572,37 @@ body > a button{
     <tbody>
         <tr>
             <th>レート</th>
-            <th><input type="text" class="name" id="name0" placeholder="player1"></th>
-            <th><input type="text" class="name" id="name1" placeholder="player2"></th>
-            <th><input type="text" class="name" id="name2" placeholder="player3"></th>
-            <th><input type="text" class="name" id="name3" placeholder="player4"></th>
+            <th><input type="text" class="name saveTarget" id="name0" placeholder="player1"></th>
+            <th><input type="text" class="name saveTarget" id="name1" placeholder="player2"></th>
+            <th><input type="text" class="name saveTarget" id="name2" placeholder="player3"></th>
+            <th><input type="text" class="name saveTarget" id="name3" placeholder="player4"></th>
             <th><button class="addMemberButton" id="addMemberButton" >+</button></th>
             <th><input type="checkbox" id="debugOn"></th>
         </tr>
         <tr id="row0">
-            <td><input type="number" class="num rate" id="rate_0"></td>
-            <td><input type="number" class="num num0" id="num0_0"></td>
-            <td><input type="number" class="num num1" id="num1_0"></td>
-            <td><input type="number" class="num num2" id="num2_0"></td>
-            <td><input type="number" class="num num3" id="num3_0"></td>
+            <td><input type="number" class="num rate saveTarget" id="rate_0"></td>
+            <td><input type="number" class="num num0 saveTarget" id="num0_0"></td>
+            <td><input type="number" class="num num1 saveTarget" id="num1_0"></td>
+            <td><input type="number" class="num num2 saveTarget" id="num2_0"></td>
+            <td><input type="number" class="num num3 saveTarget" id="num3_0"></td>
             <td><button class="settingButton" id="settingOpenButton0" >設定</button></td>
             <td><p id="debug0"></p></td>
         </tr>
         <tr id="row1">
-            <td><input type="number" class="num rate" id="rate_1"></td>
-            <td><input type="number" class="num num0" id="num0_1"></td>
-            <td><input type="number" class="num num1" id="num1_1"></td>
-            <td><input type="number" class="num num2" id="num2_1"></td>
-            <td><input type="number" class="num num3" id="num3_1"></td>
+            <td><input type="number" class="num rate saveTarget" id="rate_1"></td>
+            <td><input type="number" class="num num0 saveTarget" id="num0_1"></td>
+            <td><input type="number" class="num num1 saveTarget" id="num1_1"></td>
+            <td><input type="number" class="num num2 saveTarget" id="num2_1"></td>
+            <td><input type="number" class="num num3 saveTarget" id="num3_1"></td>
             <td><button  class="settingButton" id="settingOpenButton1" >設定</button></td>
             <td><p id="debug1"></p></td>
         </tr>
         <tr id="row_tip">
-            <td><input type="number" class="num rate" id="rate_tip" value="100"></td>
-            <td><input type="number" class="num num0" id="num_tip_0" placeholder="チップ増減"></td>
-            <td><input type="number" class="num num1" id="num_tip_1" placeholder="チップ増減"></td>
-            <td><input type="number" class="num num2" id="num_tip_2" placeholder="チップ増減"></td>
-            <td><input type="number" class="num num3" id="num_tip_3" placeholder="チップ増減"></td>
+            <td><input type="number" class="num rate saveTarget" id="rate_tip" value="100"></td>
+            <td><input type="number" class="num num0 saveTarget" id="num_tip_0" placeholder="チップ増減"></td>
+            <td><input type="number" class="num num1 saveTarget" id="num_tip_1" placeholder="チップ増減"></td>
+            <td><input type="number" class="num num2 saveTarget" id="num_tip_2" placeholder="チップ増減"></td>
+            <td><input type="number" class="num num3 saveTarget" id="num_tip_3" placeholder="チップ増減"></td>
         </tr>
         <tr id="scores">
             <td>sum:</td>
@@ -595,10 +613,10 @@ body > a button{
         </tr>
         <tr id="place">
             <td>場代</td>
-            <td><input class="place" id="place0" type="number"></input></td>
-            <td><input class="place" id="place1" type="number"></input></td>
-            <td><input class="place" id="place2" type="number"></input></td>
-            <td><input class="place" id="place3" type="number"></input></td>
+            <td><input class="place saveTarget" id="place0" type="number"></input></td>
+            <td><input class="place saveTarget" id="place1" type="number"></input></td>
+            <td><input class="place saveTarget" id="place2" type="number"></input></td>
+            <td><input class="place saveTarget" id="place3" type="number"></input></td>
         </tr>
     </tbody>
     </table>
@@ -624,6 +642,14 @@ body > a button{
     let umaDefo = [0,0,0,0]
     let uma3Defo = [0,0,0]
     let okaDefo = 0
+    let dirty = false
+    let dirtys = []
+    let timers = new Array(document.querySelectorAll(".saveTarget").length).fill(null)
+    let oldVals = {}
+    let newVals = {}
+    let saving = false
+    let saveQueued = []
+    let revision = {{datas[6] | default(0) | tojson}}
 
     function scoreCheck(){
         //rank
@@ -742,7 +768,7 @@ body > a button{
         else{
             document.querySelectorAll("#row_tip input").forEach(e=>e.classList.add("error"))
         }
-        sendData()
+        //sendData()
         payCalc()
     }
 
@@ -818,7 +844,7 @@ body > a button{
         document.querySelector(`#settingOpenButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: setting})
         document.querySelector(`#row${maxRow}`).querySelectorAll("input").forEach(e=> e.addEventListener("input",() => {
             console.log(`${maxRow}input`)
-            sendData()
+            //sendData()
             payCalc()
             scoreCheck()
         }))
@@ -904,7 +930,7 @@ body > a button{
         document.querySelector(`#settingSubmitAllButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: settingSubmitAll})
         document.querySelector(`#settingOpenButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: setting})
         document.querySelector(`#row${maxRow}`).querySelectorAll("input").forEach(e => e.addEventListener("input",() => {
-            sendData()
+            //sendData()
             payCalc()
             scoreCheck()
         }))
@@ -916,6 +942,7 @@ body > a button{
         maxRow++
         console.log("FirstAddRow")
     }
+    
     function addMember(){
         //<th><input type="text" class="name" id="name3" placeholder="player4"></th>
         //<td><input type="number" class="num num3" id="num3_0"></td>
@@ -928,7 +955,7 @@ body > a button{
         document.querySelector("#row_tip").insertAdjacentHTML("beforeend",`<td><input type="number" class="num num${memberNum}" id="num_tip_${memberNum}" placeholder="チップ増減"></td>`)
         document.querySelector(`#name${memberNum-1}`).parentNode.insertAdjacentHTML("afterend",`<th><input type="text" class="name" id="name${memberNum}" placeholder="player${memberNum+1}"></th>`)
         document.querySelector(`#scores`).insertAdjacentHTML("beforeend",`<td><p class="score" id="score${memberNum}">0</p></td>`)
-        document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input type="number" class="place" id="place${memberNum}"></input></td>`)
+        document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input class="place" id="place${memberNum}"></input></td>`)
         document.querySelector(".pay").insertAdjacentHTML("beforeend",`<div class="paySentences"><p><span class="payName" id="payName${memberNum-1}"></span>⇒<span class="paidName" id="paidName${memberNum-1}"></span>：￥<span class="payMount" id="payAmount${memberNum-1}"></span></p></div>`)
 
         addEventHandler()
@@ -949,7 +976,7 @@ body > a button{
         document.querySelector("#row_tip").insertAdjacentHTML("beforeend",`<td><input type="number" class="num num${memberNum}" id="num_tip_${memberNum}" placeholder="チップ増減"></td>`)
         document.querySelector(`#name${memberNum-1}`).parentNode.insertAdjacentHTML("afterend",`<th><input type="text" class="name" id="name${memberNum}" placeholder="player${memberNum+1}"></th>`)
         document.querySelector(`#scores`).insertAdjacentHTML("beforeend",`<td><p class="score" id="score${memberNum}">0</p></td>`)
-        document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input type="number" class="place" id="place${memberNum}"></input></td>`)
+        document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input class="place" id="place${memberNum}"></input></td>`)
         document.querySelector(".pay").insertAdjacentHTML("beforeend",`<div class="paySentences"><p><span class="payName" id="payName${memberNum-1}"></span>⇒<span class="paidName" id="paidName${memberNum-1}"></span>：￥<span class="payMount" id="payAmount${memberNum-1}"></span></p></div>`)
 
         //uma.push(umaDefo)
@@ -1030,7 +1057,7 @@ body > a button{
         scoreCheck()
     }
 
-    async function sendData(){
+    function collectData(){
         datas = []
         names = []
         points = []
@@ -1055,14 +1082,9 @@ body > a button{
             points.push(nums)
         }
         datas = [names,points,tips,settings,places]
-        res = await fetch("{{url_for('send_data',page_id=page_id)}}",{
-            "method":"POST",
-            "headers":{"Content-Type":"application/json"},
-            "body":JSON.stringify(datas)
-        })
-        //console.log(res)
-    }
 
+        return datas;
+    }
 
     function settingInput(){
         for(let i=0; i<maxRow; i++){
@@ -1099,42 +1121,184 @@ body > a button{
         datas = {{datas | tojson}}
         console.log("DOM",datas)
         refreshVals(datas)
+        oldValReload()
         addEventHandler()
         repearLoadValue()
+
+        document.querySelector("#showNoticeButton").addEventListener("click",showNotice)
+        document.querySelector("#urlCopyButton").addEventListener("click",urlCopy)
+        document.querySelector("#settingSubmitButton0").addEventListener("click", {num: 0, handleEvent: settingSubmit})
+        document.querySelector("#settingSubmitAllButton0").addEventListener("click", {num: 0, handleEvent: settingSubmitAll})
+        document.querySelector("#settingSubmitButton1").addEventListener("click", {num: 1, handleEvent: settingSubmit})
+        document.querySelector("#settingSubmitAllButton1").addEventListener("click", {num: 1, handleEvent: settingSubmitAll})
+        document.querySelector("#addMemberButton").addEventListener("click", addMember)
+        document.querySelector("#settingOpenButton0").addEventListener("click", {num: 0, handleEvent: setting})
+        document.querySelector("#settingOpenButton1").addEventListener("click", {num: 1, handleEvent: setting})
+        document.querySelector("#addRowButton").addEventListener("click", addRow)
+        document.querySelector("#debugOn").addEventListener("change", settingInput)
     })
+
+    function oldValReload(){
+        for(let i in document.querySelectorAll(".saveTarget")){
+            oldVals[document.querySelectorAll(".saveTarget")[i].id] = document.querySelectorAll(".saveTarget")[i].value
+            newVals[document.querySelectorAll(".saveTarget")[i].id] = document.querySelectorAll(".saveTarget")[i].value
+        }
+    }
+
+    //datas:names,nums,tips,settings(uma,oka),places,timestamp
+    function indexFromId(id){
+        //names
+        if (/name/.test(id)){
+            return [0, parseInt(id[id.length-1])];
+        }
+        //tips
+        if (/num_tip_/.test(id)){
+            return [2, parseInt(id[id.length-1])+1];
+        }
+        if (/rate_tip/.test(id)){
+            return [2, 0]
+        }
+        //nums
+        if (/num/.test(id)){
+            return [1, parseInt(id[id.length-1]), parseInt(id[3])+1];
+        }
+        //rate
+        if (/rate/.test(id)){
+            return [1,parseInt(id[id.length-1]),0]
+        }
+        //places
+        if (/place/.test(id)){
+            return [4, parseInt(id[id.length-1])];
+        }
+}
 
 
     function addEventHandler(){
-        document.querySelectorAll(".num").forEach(e=>{
-            e.addEventListener("input",()=>{
-                sendData()
-                payCalc()
-                scoreCheck()
-            })
-            //e.addEventListener("focus",() => {
-            //    loadValue()
-            //})
+        document.querySelectorAll(".saveTarget").forEach((e,i)=>{
+            e.addEventListener("input",()=> inputEvent(e.id))
         })
-        document.querySelectorAll(".name").forEach(e=>{
-            e.addEventListener("input",()=>{
-                sendData()
-                payCalc()
-                scoreCheck()
-            })
-            //e.addEventListener("focus",() => {
-            //    loadValue()
-            //})
-        })
-        document.querySelectorAll(".place").forEach(e=>{
-            e.addEventListener("input",()=>{
-                sendData()
-                payCalc()
-                scoreCheck()
+        //document.querySelectorAll(".num").forEach(e=>{
+        //    e.addEventListener("input",()=>{
+        //        inputEvent()
+        //        //sendData()
+        //        //payCalc()
+        //        //scoreCheck()
+        //    })
+        //    //e.addEventListener("focus",() => {
+        //    //    loadValue()
+        //    //})
+        //})
+        //document.querySelectorAll(".name").forEach(e=>{
+        //    e.addEventListener("input",()=>{
+        //        inputEvent()
+        //        //sendData()
+        //        //payCalc()
+        //        //scoreCheck()
+        //    })
+        //    //e.addEventListener("focus",() => {
+        //    //    loadValue()
+        //    //})
+        //})
+        //document.querySelectorAll(".place").forEach(e=>{
+        //    e.addEventListener("input",()=>{
+        //        inputEvent()
+        //        //sendData()
+        //        //payCalc()
+        //        //scoreCheck()
+        //        })
+        //    //e.addEventListener("focus",() => {
+        //    //    loadValue()
+        //    //})
+        //})
+    }
+
+    function inputEvent(id){
+        document.getElementById("saveStatus").classList.add("wait")
+        payCalc()
+        scoreCheck()
+        markDirty(id)
+        newValsInput(id)
+        waitSecond(id)
+    }
+
+    function markDirty(id){
+        dirtys.push(id)
+    }
+
+    function newValsInput(id){
+        newVals[id] = document.getElementById(id).value
+    }
+
+    function waitSecond(id){
+        clearTimeout(timers[id])
+
+        timers[id] = setTimeout(()=>sendData2(id),1000)
+    }
+
+    async function sendData2(id){
+        console.log("sendDtart",id, saving)
+        if (saving && !saveQueued.includes(id)){
+            saveQueued.push(id)
+            console.log("saveQueue")
+            return;
+        }
+
+        saving = true
+
+        data = {"index": indexFromId(id),
+            "oldVal": oldVals[id],
+            "newVal": newVals[id],
+            "revision": revision
+        }
+
+        console.log("sendData", data)
+
+        try{
+            respons = await fetch("{{url_for('send_data2', page_id = page_id)}}",{
+                method : "POST",
+                headers : {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
                 })
-            //e.addEventListener("focus",() => {
-            //    loadValue()
-            //})
-        })
+            console.log(respons)
+            if (!respons.ok){
+                if (respons.status == 404){
+                    throw Error("Not Found")
+                }
+                else if (respons.status == 409){
+                    doReload = confirm("表示されているデータが古い可能性があります。リロードしますか?")
+                    
+                    if (doReload){
+                        window.location.href = "{{url_for('page',page_id = page_id, _external = True)}}"
+                    }
+                }
+            }
+            else{
+                //revision = respons.body.json["revision"]
+                ret =  await respons.json()
+                revision = ret.revision
+
+                oldVals[id] = ret.val
+                
+                saving = false
+                console.log("sendEnd",id, saveQueued)
+
+                if (saveQueued.length == 0){
+                    document.getElementById("saveStatus").classList.remove("wait")
+                    console.log("WAITREMOVE")
+                }
+                else{
+                    index = saveQueued[0]
+                    saveQueued.shift()
+                    sendData2(index)
+                }
+            }
+        }
+        catch(e){console.error(e)}
+        finally{
+            saving =false
+        }
     }
 
     function payCalc(){
@@ -1300,18 +1464,6 @@ body > a button{
         }, timeout);
     }
 
-
-        document.querySelector("#showNoticeButton").addEventListener("click",showNotice)
-        document.querySelector("#urlCopyButton").addEventListener("click",urlCopy)
-        document.querySelector("#settingSubmitButton0").addEventListener("click", {num: 0, handleEvent: settingSubmit})
-        document.querySelector("#settingSubmitAllButton0").addEventListener("click", {num: 0, handleEvent: settingSubmitAll})
-        document.querySelector("#settingSubmitButton1").addEventListener("click", {num: 1, handleEvent: settingSubmit})
-        document.querySelector("#settingSubmitAllButton1").addEventListener("click", {num: 1, handleEvent: settingSubmitAll})
-        document.querySelector("#addMemberButton").addEventListener("click", addMember)
-        document.querySelector("#settingOpenButton0").addEventListener("click", {num: 0, handleEvent: setting})
-        document.querySelector("#settingOpenButton1").addEventListener("click", {num: 1, handleEvent: setting})
-        document.querySelector("#addRowButton").addEventListener("click", addRow)
-        document.querySelector("#debugOn").addEventListener("change", settingInput)
 </script>
 </body>
 </html>
