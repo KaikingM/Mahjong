@@ -369,7 +369,7 @@ body > a button{
     color: orange;
 }
 
-#saveStatus.conflict{
+#saveStatus.conflict, #saveStatus.faild{
     color: red;
 }
 
@@ -477,7 +477,7 @@ body > a button{
         <h1>麻雀スコア表</h1>
         <p id="showNoticeButton">？</p>
     </div>
-    <p id="version">ver1.4.0</p>
+    <p id="version">ver1.4.0 β</p>
     <p id="saveStatus" class="success">●</p>
     <div class="notice" hidden>
         <h1>基本的な使い方</h1>
@@ -490,6 +490,15 @@ body > a button{
             <li>場代を払った人の列に金額を入力する</li>
             <li>下に表示される通りにやり取りをする</li>
         </ol>
+        <h1>ver1.4.0リリースノート</h1>
+        <ul>
+            <li>In-Memory DBからOn-disk DBへ変更。より安定した動作と安全な設計に</li>
+            <li>保存方式を変更。古いデータによる破損を防止</li>
+            <li>競合した変更にも適切に対処できるように</li>
+            <li>保存状況を示すランプの実装。緑で正常に保存済み</li>
+            <li><a href="{{url_for('history')}}">履歴機能</a>の追加。スクショで保存する必要が無くなります。</li>
+            <li>テスト版よりウマオカの設定は保存されません。順次対応します<li>
+        </ul>
         <h1>ver1.3.0リリースノート</h1>
         <ul>
             <li>より強力な同期でデータの誤上書きを防止</li>
@@ -644,12 +653,12 @@ body > a button{
     let okaDefo = 0
     let dirty = false
     let dirtys = []
-    let timers = new Array(document.querySelectorAll(".saveTarget").length).fill(null)
+    let timers = new Map()
     let oldVals = {}
     let newVals = {}
     let saving = false
     let saveQueued = []
-    let revision = {{datas[6] | default(0) | tojson}}
+    let revision = {{revision | default(0) | tojson}}
 
     function scoreCheck(){
         //rank
@@ -772,49 +781,69 @@ body > a button{
         payCalc()
     }
 
+    function enqueueAddRow(){
+        saveQueued.push("addRow")
+
+        processSaveQueue()
+    }
+
+    async function addRowPost() {
+        try{
+            respons = await fetch("{{url_for('add_row_post', page_id = page_id)}}",{
+                method : "POST",
+                headers : {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({"revision":revision})
+                })
+            console.log(respons)
+            if (!respons.ok){
+                if (respons.status == 404){
+                    throw Error("Not Found")
+                }
+                else if (respons.status == 409){
+                    doReload = confirm("表示されているデータが古い可能性があります。リロードしますか?")
+                    
+                    if (doReload){
+                        window.location.href = "{{url_for('page',page_id = page_id, _external = True)}}"
+                    }
+                }
+                else{
+                    doReload = confirm("予期せぬエラーが発生しました。リロードしますか?")
+                    
+                    if (doReload){
+                        window.location.href = "{{url_for('page',page_id = page_id, _external = True)}}"
+                    }
+                }
+            }
+            else{
+                ret =  await respons.json()
+                revision = ret.revision
+                console.log("revision",revision)
+            }
+        }
+        catch(e){console.error(e)}
+        
+        return respons
+    }
+
     function addRow(){
-        //tr = document.createElement("tr")
-        //tr.id = `row${maxRow}`
-        //td = document.createElement("td")
-        //input = document.createElement("input")
-        //input.type = "number"
-        //input.className = "num rate"
-        //input.id = `rate_${maxRow}`
-        //input.addEventListener("input",scoreCheck)
-        //td.appendChild(input)
-        //tr.appendChild(td)
-        //for (let i=0; i<memberNum; i++){
-        //    td = document.createElement("td")
-        //    input = document.createElement("input")
-        //    input.type = "number"
-        //    input.className = `num num${i}`
-        //    input.id = `num${i}_${maxRow}`
-        //    input.addEventListener("input",scoreCheck)
-        //    td.appendChild(input)
-        //    tr.appendChild(td)
-        //}
-        //tr.insertAdjacentHTML("beforeend",'<td><button class="settingButton" onclick="setting(0)">設定</button></td>')
-        ///document.querySelector("tbody").insertBefore(tr,document.querySelector("#row_tip"))
         htmlContentHead = `<tr id="row${maxRow}">
-            <td><input type="number" class="num rate" id="rate_${maxRow}"></td>`
+            <td><input type="number" class="num rate saveTarget" id="rate_${maxRow}"></td>`
+
         htmlContentFoot = `<td><button  class="settingButton" id="settingOpenButton${maxRow}" >設定</button></td>
             <td><p id="debug${maxRow}"></p></td>
             </tr>`
+
         htmlContentMiddle = ""
+
         for(let i=0; i<memberNum; i++){
-            htmlContentMiddle += `<td><input type="number" class="num num${i}" id="num${i}_${maxRow}"></td>`
+            htmlContentMiddle += `<td><input type="number" class="num num${i} saveTarget" id="num${i}_${maxRow}"></td>`
         }
+
         document.querySelector("#row_tip").insertAdjacentHTML("beforeBegin", htmlContentHead + htmlContentMiddle + htmlContentFoot)
+
         console.log(htmlContentHead+htmlContentMiddle+htmlContentFoot)
-        ///<tr id="row${maxRow}">
-        ///    <td><input type="number" class="num rate" id="rate_${maxRow}"></td>
-        ///    <td><input type="number" class="num num0" id="num0_${maxRow}"></td>
-        ///    <td><input type="number" class="num num1" id="num1_${maxRow}"></td>
-        ///    <td><input type="number" class="num num2" id="num2_${maxRow}"></td>
-        ///    <td><input type="number" class="num num3" id="num3_${maxRow}"></td>
-        ///    <td><button  class="settingButton" id="settingOpenButton${maxRow}" >設定</button></td>
-        ///    <td><p id="debug${maxRow}"></p></td>
-        ///</tr>`)
 
         document.querySelector(".settings").insertAdjacentHTML("beforeend",`<div class="setting" id="setting${maxRow}" hidden>
             <h2>ウマ</h2>
@@ -842,12 +871,13 @@ body > a button{
         document.querySelector(`#settingSubmitButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: settingSubmit})
         document.querySelector(`#settingSubmitAllButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: settingSubmitAll})
         document.querySelector(`#settingOpenButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: setting})
-        document.querySelector(`#row${maxRow}`).querySelectorAll("input").forEach(e=> e.addEventListener("input",() => {
-            console.log(`${maxRow}input`)
-            //sendData()
-            payCalc()
-            scoreCheck()
-        }))
+        document.querySelector(`#row${maxRow}`).querySelectorAll("input").forEach(e=> {
+            oldVals[e.id] = ""
+            newVals[e.id] = ""
+            e.addEventListener("input",() => {
+                inputEvent(e.id)
+            })
+        })
         
 
         uma.push(umaDefo)
@@ -857,51 +887,20 @@ body > a button{
         maxRow++
         scoreCheck()
         settingInput()
-        
-        console.log("AddRow")
+
     }
 
     function firstAddRow(){
-        ///tr = document.createElement("tr")
-        ///tr.id = `row${maxRow}`
-        ///td = document.createElement("td")
-        ///input = document.createElement("input")
-        ///input.type = "number"
-        ///input.className = "num rate"
-        ///input.id = `rate_${maxRow}`
-        ///input.addEventListener("input",scoreCheck)
-        ///td.appendChild(input)
-        ///tr.appendChild(td)
-        ///for (let i=0; i<memberNum; i++){
-        ///    td = document.createElement("td")
-        ///    input = document.createElement("input")
-        ///    input.type = "number"
-        ///    input.className = `num num${i}`
-        ///    input.id = `num${i}_${maxRow}`
-        ///    input.addEventListener("input",scoreCheck)
-        ///    td.appendChild(input)
-        ///    tr.appendChild(td)
-        ///}
-        ///tr.insertAdjacentHTML("beforeend",'<td><button class="settingButton" onclick="setting(0)">設定</button></td>')
         htmlContentHead = `<tr id="row${maxRow}">
-            <td><input type="number" class="num rate" id="rate_${maxRow}"></td>`
+            <td><input type="number" class="num rate saveTarget" id="rate_${maxRow}"></td>`
         htmlContentFoot = `<td><button  class="settingButton" id="settingOpenButton${maxRow}" >設定</button></td>
             <td><p id="debug${maxRow}"></p></td>
             </tr>`
         htmlContentMiddle = ""
         for(let i=0; i<memberNum; i++){
-            htmlContentMiddle += `<td><input type="number" class="num num${i}" id="num${i}_${maxRow}"></td>`
+            htmlContentMiddle += `<td><input type="number" class="num num${i} saveTarget" id="num${i}_${maxRow}"></td>`
         }
         document.querySelector("#row_tip").insertAdjacentHTML("beforeBegin", htmlContentHead + htmlContentMiddle + htmlContentFoot)
-        ///<tr id="row${maxRow}">
-        ///    <td><input type="number" class="num rate" id="rate_${maxRow}"></td>
-        ///    <td><input type="number" class="num num0" id="num0_${maxRow}"></td>
-        ///    <td><input type="number" class="num num1" id="num1_${maxRow}"></td>
-        ///    <td><input type="number" class="num num2" id="num2_${maxRow}"></td>
-        ///    <td><input type="number" class="num num3" id="num3_${maxRow}"></td>
-        ///    <td><button  class="settingButton" id="settingOpenButton${maxRow}" >設定</button></td>
-        ///    <td><p id="debug${maxRow}"></p></td>
-        ///</tr>`)
 
         document.querySelector(".settings").insertAdjacentHTML("beforeend",`<div class="setting" id="setting${maxRow}" hidden>
             <h2>ウマ</h2>
@@ -926,14 +925,16 @@ body > a button{
             <p><button class="settingButton" id="settingSubmitAllButton${maxRow}">すべてに適用</button></p>
         </div>`)
 
-        document.querySelector(`#settingSubmitButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: settingSubmit})
-        document.querySelector(`#settingSubmitAllButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: settingSubmitAll})
-        document.querySelector(`#settingOpenButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: setting})
-        document.querySelector(`#row${maxRow}`).querySelectorAll("input").forEach(e => e.addEventListener("input",() => {
-            //sendData()
-            payCalc()
-            scoreCheck()
-        }))
+        //document.querySelector(`#settingSubmitButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: settingSubmit})
+        //document.querySelector(`#settingSubmitAllButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: settingSubmitAll})
+        //document.querySelector(`#settingOpenButton${maxRow}`).addEventListener("click", {num: maxRow, handleEvent: setting})
+        //document.querySelector(`#row${maxRow}`).querySelectorAll("input").forEach(e => {
+        //oldVals[e.id] = ""
+        //newVals[e.id] = ""
+        //e.addEventListener("input",() => {
+        //    inputEvent(e.id)
+        //})
+        //})
 
         uma.push(umaDefo)
         uma3.push(uma3Defo)
@@ -942,42 +943,92 @@ body > a button{
         maxRow++
         console.log("FirstAddRow")
     }
+
+    function enqueueAddMember(){
+        saveQueued.push("addMember")
+
+        processSaveQueue()
+    }
+
+    async function addMemberPost(){
+        try{
+            respons = await fetch("{{url_for('add_member_post', page_id = page_id)}}",{
+                method : "POST",
+                headers : {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({"revision":revision})
+                })
+            console.log(respons)
+            if (!respons.ok){
+                if (respons.status == 404){
+                    throw Error("Not Found")
+                }
+                else if (respons.status == 409){
+                    doReload = confirm("表示されているデータが古い可能性があります。リロードしますか?")
+                    
+                    if (doReload){
+                        window.location.href = "{{url_for('page',page_id = page_id, _external = True)}}"
+                    }
+                }
+                else{
+                    doReload = confirm("予期せぬエラーが発生しました。リロードしますか?")
+                    
+                    if (doReload){
+                        window.location.href = "{{url_for('page',page_id = page_id, _external = True)}}"
+                    }
+                }
+            }
+            else{
+                ret =  await respons.json()
+                revision = ret.revision
+            }
+        }
+        catch(e){console.error(e)}
+        
+        return respons
+    }
     
     function addMember(){
-        //<th><input type="text" class="name" id="name3" placeholder="player4"></th>
-        //<td><input type="number" class="num num3" id="num3_0"></td>
-        //<td><p class="score" id="score3">0</p></td>
-        //<td><input class="place" id="place3"></input></td>
         for(let i=0; i<maxRow; i++){
-            document.querySelector(`#num${memberNum-1}_${i}`).parentNode.insertAdjacentHTML("afterend",`<td><input type="number" class="num num${memberNum}" id="num${memberNum}_${i}"></td>`)
-
+            document.querySelector(`#num${memberNum-1}_${i}`).parentNode.insertAdjacentHTML("afterend",`<td><input type="number" class="num num${memberNum} saveTarget" id="num${memberNum}_${i}"></td>`)
+            document.getElementById(`num${memberNum}_${i}`).addEventListener("input", e =>(inputEvent(e.currentTarget.id)))
+            oldVals[`num${memberNum}_${i}`] = ""
         }
-        document.querySelector("#row_tip").insertAdjacentHTML("beforeend",`<td><input type="number" class="num num${memberNum}" id="num_tip_${memberNum}" placeholder="チップ増減"></td>`)
-        document.querySelector(`#name${memberNum-1}`).parentNode.insertAdjacentHTML("afterend",`<th><input type="text" class="name" id="name${memberNum}" placeholder="player${memberNum+1}"></th>`)
+
+        document.querySelector("#row_tip").insertAdjacentHTML("beforeend",`<td><input type="number" class="num num${memberNum} saveTarget" id="num_tip_${memberNum}" placeholder="チップ増減"></td>`)
+        document.querySelector(`#name${memberNum-1}`).parentNode.insertAdjacentHTML("afterend",`<th><input type="text" class="name saveTarget" id="name${memberNum}" placeholder="player${memberNum+1}"></th>`)
         document.querySelector(`#scores`).insertAdjacentHTML("beforeend",`<td><p class="score" id="score${memberNum}">0</p></td>`)
-        document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input class="place" id="place${memberNum}"></input></td>`)
-        document.querySelector(".pay").insertAdjacentHTML("beforeend",`<div class="paySentences"><p><span class="payName" id="payName${memberNum-1}"></span>⇒<span class="paidName" id="paidName${memberNum-1}"></span>：￥<span class="payMount" id="payAmount${memberNum-1}"></span></p></div>`)
+        document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input class="place saveTarget" id="place${memberNum}"></input></td>`)
+        document.querySelector(".pay").insertAdjacentHTML("beforeend",`<div class="paySentences saveTarget"><p><span class="payName" id="payName${memberNum-1}"></span>⇒<span class="paidName" id="paidName${memberNum-1}"></span>：￥<span class="payMount" id="payAmount${memberNum-1}"></span></p></div>`)
 
-        addEventHandler()
-
-        //uma.push(umaDefo)
-        //uma3.push(uma3Defo)
-        //oka.push(okaDefo)
+        for (i of [`num_tip_${memberNum}`, `name${memberNum}`, `place${memberNum}`]){
+            document.getElementById(i).addEventListener("input", e => (inputEvent(e.currentTarget.id)))
+            oldVals[i] = ""
+        }
 
         memberNum++
         scoreCheck()
+
     }
 
     function firstaddMember(){
         for(let i=0; i<maxRow; i++){
-            document.querySelector(`#num${memberNum-1}_${i}`).parentNode.insertAdjacentHTML("afterend",`<td><input type="number" class="num num${memberNum}" id="num${memberNum}_${i}"></td>`)
+            document.querySelector(`#num${memberNum-1}_${i}`).parentNode.insertAdjacentHTML("afterend",`<td><input type="number" class="num num${memberNum} saveTarget" id="num${memberNum}_${i}"></td>`)
 
+            document.getElementById(`num${memberNum}_${i}`).addEventListener("input", e =>(inputEvent(e.currentTarget.id)))
+            oldVals[`num${memberNum}_${i}`] = ""
         }
-        document.querySelector("#row_tip").insertAdjacentHTML("beforeend",`<td><input type="number" class="num num${memberNum}" id="num_tip_${memberNum}" placeholder="チップ増減"></td>`)
-        document.querySelector(`#name${memberNum-1}`).parentNode.insertAdjacentHTML("afterend",`<th><input type="text" class="name" id="name${memberNum}" placeholder="player${memberNum+1}"></th>`)
-        document.querySelector(`#scores`).insertAdjacentHTML("beforeend",`<td><p class="score" id="score${memberNum}">0</p></td>`)
-        document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input class="place" id="place${memberNum}"></input></td>`)
+        document.querySelector("#row_tip").insertAdjacentHTML("beforeend",`<td><input type="number" class="num num${memberNum} saveTarget" id="num_tip_${memberNum}" placeholder="チップ増減"></td>`)
+        document.querySelector(`#name${memberNum-1}`).parentNode.insertAdjacentHTML("afterend",`<th><input type="text" class="name saveTarget" id="name${memberNum}" placeholder="player${memberNum+1}"></th>`)
+        document.querySelector(`#scores`).insertAdjacentHTML("beforeend",`<td><p class="score saveTarget" id="score${memberNum}">0</p></td>`)
+        document.querySelector(`#place`).insertAdjacentHTML("beforeend",`<td><input class="place saveTarget" id="place${memberNum}"></input></td>`)
         document.querySelector(".pay").insertAdjacentHTML("beforeend",`<div class="paySentences"><p><span class="payName" id="payName${memberNum-1}"></span>⇒<span class="paidName" id="paidName${memberNum-1}"></span>：￥<span class="payMount" id="payAmount${memberNum-1}"></span></p></div>`)
+
+        //for (i of [`num_tip_${memberNum}`, `name${memberNum}`, `place${memberNum}`]){
+        //    document.getElementById(i).addEventListener("input", e => (inputEvent(e.currentTarget.id)))
+        //    oldVals[i] = ""
+        //}
 
         //uma.push(umaDefo)
         //uma3.push(uma3Defo)
@@ -1121,7 +1172,7 @@ body > a button{
         datas = {{datas | tojson}}
         console.log("DOM",datas)
         refreshVals(datas)
-        oldValReload()
+        oldValReload()// TODO addRowはevent追加あり、firstはなしに変更
         addEventHandler()
         repearLoadValue()
 
@@ -1131,10 +1182,10 @@ body > a button{
         document.querySelector("#settingSubmitAllButton0").addEventListener("click", {num: 0, handleEvent: settingSubmitAll})
         document.querySelector("#settingSubmitButton1").addEventListener("click", {num: 1, handleEvent: settingSubmit})
         document.querySelector("#settingSubmitAllButton1").addEventListener("click", {num: 1, handleEvent: settingSubmitAll})
-        document.querySelector("#addMemberButton").addEventListener("click", addMember)
+        document.querySelector("#addMemberButton").addEventListener("click", enqueueAddMember)
         document.querySelector("#settingOpenButton0").addEventListener("click", {num: 0, handleEvent: setting})
         document.querySelector("#settingOpenButton1").addEventListener("click", {num: 1, handleEvent: setting})
-        document.querySelector("#addRowButton").addEventListener("click", addRow)
+        document.querySelector("#addRowButton").addEventListener("click", enqueueAddRow)
         document.querySelector("#debugOn").addEventListener("change", settingInput)
     })
 
@@ -1148,27 +1199,27 @@ body > a button{
     //datas:names,nums,tips,settings(uma,oka),places,timestamp
     function indexFromId(id){
         //names
-        if (/name/.test(id)){
-            return [0, parseInt(id[id.length-1])];
+        if (match = id.match(/^name(\d+)$/)){
+            return [0, parseInt(match[1])];
         }
         //tips
-        if (/num_tip_/.test(id)){
-            return [2, parseInt(id[id.length-1])+1];
+        if (match = id.match(/^num_tip_(\d+)$/)){
+            return [2, parseInt(match[1])+1];
         }
-        if (/rate_tip/.test(id)){
+        if (id === "rate_tip"){
             return [2, 0]
         }
         //nums
-        if (/num/.test(id)){
-            return [1, parseInt(id[id.length-1]), parseInt(id[3])+1];
+        if (match = id.match(/^num(\d+)_(\d+)$/)){
+            return [1, parseInt(match[2]), parseInt(match[1])+1];
         }
         //rate
-        if (/rate/.test(id)){
-            return [1,parseInt(id[id.length-1]),0]
+        if (match = id.match(/^rate_(\d+)$/)){
+            return [1,parseInt(match[1]),0]
         }
         //places
-        if (/place/.test(id)){
-            return [4, parseInt(id[id.length-1])];
+        if (match = id.match(/^place(\d+)/)){
+            return [4, parseInt(match[1])];
         }
 }
 
@@ -1177,81 +1228,88 @@ body > a button{
         document.querySelectorAll(".saveTarget").forEach((e,i)=>{
             e.addEventListener("input",()=> inputEvent(e.id))
         })
-        //document.querySelectorAll(".num").forEach(e=>{
-        //    e.addEventListener("input",()=>{
-        //        inputEvent()
-        //        //sendData()
-        //        //payCalc()
-        //        //scoreCheck()
-        //    })
-        //    //e.addEventListener("focus",() => {
-        //    //    loadValue()
-        //    //})
-        //})
-        //document.querySelectorAll(".name").forEach(e=>{
-        //    e.addEventListener("input",()=>{
-        //        inputEvent()
-        //        //sendData()
-        //        //payCalc()
-        //        //scoreCheck()
-        //    })
-        //    //e.addEventListener("focus",() => {
-        //    //    loadValue()
-        //    //})
-        //})
-        //document.querySelectorAll(".place").forEach(e=>{
-        //    e.addEventListener("input",()=>{
-        //        inputEvent()
-        //        //sendData()
-        //        //payCalc()
-        //        //scoreCheck()
-        //        })
-        //    //e.addEventListener("focus",() => {
-        //    //    loadValue()
-        //    //})
-        //})
     }
 
     function inputEvent(id){
         document.getElementById("saveStatus").classList.add("wait")
         payCalc()
         scoreCheck()
-        markDirty(id)
         newValsInput(id)
         waitSecond(id)
     }
 
-    function markDirty(id){
-        dirtys.push(id)
-    }
-
     function newValsInput(id){
+        console.log(id)
         newVals[id] = document.getElementById(id).value
     }
 
     function waitSecond(id){
-        clearTimeout(timers[id])
+        clearTimeout(timers.get(id))
 
-        timers[id] = setTimeout(()=>sendData2(id),1000)
+        timers.set(id, setTimeout(()=>{
+            timers.delete(id)
+            enqueueSave(id)
+        },1000))
     }
 
-    async function sendData2(id){
-        console.log("sendDtart",id, saving)
-        if (saving && !saveQueued.includes(id)){
+    function enqueueSave(id){
+        if (!saveQueued.includes(id)){
             saveQueued.push(id)
-            console.log("saveQueue")
+        }
+
+        processSaveQueue()
+    }
+
+    async function processSaveQueue(){
+        if (saving){
             return;
         }
 
         saving = true
 
+        try{
+            while (saveQueued.length > 0){
+                id = saveQueued.shift()
+
+                if (id == "addRow"){
+                    respons = await addRowPost()
+                    if (respons.ok){
+                        addRow()
+                    }
+                }
+                else if (id == "addMember"){
+                    respons = await addMemberPost()
+                    if (respons.ok){
+                        addMember()
+                    }
+                }
+                else{
+                    await sendData2(id)
+                }
+            }
+        }
+        catch(e){
+            console.error(e)
+            document.getElementById("saveStatus").classList.add("error")
+        }
+        finally{
+            saving = false
+
+            if (saveQueued.length === 0){
+                document.getElementById("saveStatus").classList.remove("wait")
+            }
+            else{
+                processSaveQueue()
+            }
+        }
+    }
+
+    async function sendData2(id){
         data = {"index": indexFromId(id),
             "oldVal": oldVals[id],
             "newVal": newVals[id],
             "revision": revision
         }
-
-        console.log("sendData", data)
 
         try{
             respons = await fetch("{{url_for('send_data2', page_id = page_id)}}",{
@@ -1273,31 +1331,27 @@ body > a button{
                         window.location.href = "{{url_for('page',page_id = page_id, _external = True)}}"
                     }
                 }
+                else{
+                    doReload = confirm("予期せぬエラーが発生しました。リロードしますか?")
+                    
+                    if (doReload){
+                        window.location.href = "{{url_for('page',page_id = page_id, _external = True)}}"
+                    }
+                }
             }
             else{
-                //revision = respons.body.json["revision"]
                 ret =  await respons.json()
                 revision = ret.revision
 
                 oldVals[id] = ret.val
-                
-                saving = false
-                console.log("sendEnd",id, saveQueued)
-
-                if (saveQueued.length == 0){
-                    document.getElementById("saveStatus").classList.remove("wait")
-                    console.log("WAITREMOVE")
-                }
-                else{
-                    index = saveQueued[0]
-                    saveQueued.shift()
-                    sendData2(index)
-                }
             }
         }
-        catch(e){console.error(e)}
-        finally{
-            saving =false
+        catch(e){
+            console.error(e)
+            document.getElementById("saveStatus").classList.add("faild")
+            if (confirm("エラー : 更新しますか？")){
+                window.location.href = "{{url_for('page', page_id = page_id)}}"
+            }
         }
     }
 
@@ -1392,6 +1446,10 @@ body > a button{
 
     async function loadValue(){
         url = "{{url_for('load_data', page_id = page_id)}}"
+
+        if(saving || saveQueued.length > 0 || timers.size >0){
+            return;
+        }
         
         responsList = await fetch(url,{
             method: "POST",
@@ -1403,7 +1461,10 @@ body > a button{
         responsJson = await responsList.json()
 
         console.log("loadval",responsJson)
-        refreshVals(responsJson)
+
+        refreshVals(responsJson.data)
+        oldValReload()
+        revision = responsJson.revision
     }
 
     function refreshVals(datas){
@@ -1446,7 +1507,7 @@ body > a button{
 
     async function repearLoadValue(){
         url = "{{url_for('load_data', page_id = page_id)}}"
-        
+
         responsList = await fetch(url,{
             method: "POST",
             headers: {
@@ -1457,7 +1518,12 @@ body > a button{
         responsJson = await responsList.json()
 
         console.log("loadval",responsJson)
-        refreshVals(responsJson)
+
+        if (!(saving || saveQueued.length > 0 || timers.size >0)){
+            refreshVals(responsJson.data)
+            oldValReload()
+            revision = responsJson.revision
+        }
         
         setTimeout(() => {
             repearLoadValue() 

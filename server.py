@@ -49,6 +49,34 @@ def set_by_path(data, path, new_value):
     # 最後のindexの値を変更
     current[path[-1]] = new_value
 
+def get_setting(data, path):
+
+    return data[3][path[0]][path[1]]
+
+def set_setting(data, path, new_val):
+
+    data[3][path[0]][path[1]] = new_val
+    
+    return data
+
+def add_row_data(data):
+    print(data)
+
+    data[1].append(["" for i in range(len(data[1][0]))])
+    data[3][0].append([0,0,0,0])
+    data[3][1].append(0)
+
+    return data
+
+def add_member_data(data):
+    data[0].append("")
+    for i,_ in enumerate(data[1]):
+        data[1][i].append("")
+    data[2].append("")
+    data[4].append("")
+
+    return data
+
 def get_connection():
     con = sqlite3.connect(db_path, timeout=10)
     con.row_factory = sqlite3.Row
@@ -191,6 +219,230 @@ def patch_page(
     finally:
         con.close()
 
+def patch_setting(
+    page_id,
+    path,
+    old_value,
+    new_value,
+    revision
+):
+    con = get_connection()
+
+    try:
+        con.execute("BEGIN IMMEDIATE")
+
+        row = con.execute(
+            """
+            SELECT revision, data
+            FROM pages
+            WHERE page_id = ?
+            """,
+            (page_id,)
+        ).fetchone()
+
+        if row is None:
+            return {
+                "ok": False,
+                "error": "not_found",
+                "code": 404
+            }
+
+        data = json.loads(row["data"])
+        current_value = get_setting(data, path)
+
+        if current_value != old_value:
+            con.rollback()
+
+            return {
+                "ok": False,
+                "error": "conflict",
+                "revision": row["revision"],
+                "current_value": current_value,
+                "code": 409
+            }
+
+        new_data = set_setting(data, path, new_value)
+
+        new_revision = row["revision"] + 1
+
+        con.execute(
+            """
+            UPDATE pages
+            SET data = ?,
+                revision = ?,
+                last_change = ?
+            WHERE page_id = ?
+            """,
+            (
+                json.dumps(new_data, ensure_ascii=False),
+                new_revision,
+                int(time.time()),
+                page_id
+            )
+        )
+
+        con.commit()
+
+        return {
+            "ok": True,
+            "revision": new_revision,
+            "code": 200,
+            "val": new_value
+        }
+
+    except Exception:
+        con.rollback()
+        raise
+
+    finally:
+        con.close()
+
+def add_row(
+    page_id,
+    revision
+):
+    con = get_connection()
+
+    try:
+        con.execute("BEGIN IMMEDIATE")
+
+        row = con.execute(
+            """
+            SELECT revision, data
+            FROM pages
+            WHERE page_id = ?
+            """,
+            (page_id,)
+        ).fetchone()
+
+        if row is None:
+            return {
+                "ok": False,
+                "error": "not_found",
+                "code": 404
+            }
+
+        current_revision = row["revision"]
+        data = json.loads(row["data"])
+
+        if revision != current_revision:
+            con.rollback()
+
+            return {
+                "ok": False,
+                "error": "conflict",
+                "revision": row["revision"],
+                "code": 409
+            }
+
+        new_data = add_row_data(data)
+
+        new_revision = current_revision + 1
+
+        con.execute(
+            """
+            UPDATE pages
+            SET data = ?,
+                revision = ?,
+                last_change = ?
+            WHERE page_id = ?
+            """,
+            (
+                json.dumps(new_data, ensure_ascii=False),
+                new_revision,
+                int(time.time()),
+                page_id
+            )
+        )
+
+        con.commit()
+
+        return {
+            "ok": True,
+            "revision": new_revision,
+            "code": 200,
+        }
+
+    except Exception:
+        con.rollback()
+        raise
+
+    finally:
+        con.close()
+    
+def add_member(
+    page_id,
+    revision
+):
+    con = get_connection()
+
+    try:
+        con.execute("BEGIN IMMEDIATE")
+
+        row = con.execute(
+            """
+            SELECT revision, data
+            FROM pages
+            WHERE page_id = ?
+            """,
+            (page_id,)
+        ).fetchone()
+
+        if row is None:
+            return {
+                "ok": False,
+                "error": "not_found",
+                "code": 404
+            }
+
+        data = json.loads(row["data"])
+        curreny_revision = row["revision"]
+
+        if revision != curreny_revision:
+            con.rollback()
+
+            return {
+                "ok": False,
+                "error": "conflict",
+                "revision": curreny_revision,
+                "code": 409
+            }
+
+        new_data = add_member_data(data)
+
+        new_revision = curreny_revision + 1
+
+        con.execute(
+            """
+            UPDATE pages
+            SET data = ?,
+                revision = ?,
+                last_change = ?
+            WHERE page_id = ?
+            """,
+            (
+                json.dumps(new_data, ensure_ascii=False),
+                new_revision,
+                int(time.time()),
+                page_id
+            )
+        )
+
+        con.commit()
+
+        return {
+            "ok": True,
+            "revision": new_revision,
+            "code": 200,
+        }
+
+    except Exception:
+        con.rollback()
+        raise
+
+    finally:
+        con.close()
+
 def list_all_record():
     con = get_connection()
 
@@ -280,6 +532,27 @@ def send_data(page_id):
     except Exception as e:
         return json.dumps(e)
 
+
+@app.route("/data_setting2/<page_id>/",methods = ["POST"])
+def send_data_setting_2(page_id):
+    try:
+        datas = request.json
+        print("senddata",datas)
+        
+        ret = patch_setting(page_id, list(map(lambda e:int(e), datas["index"])), datas["oldVal"], datas["newVal"], datas["revision"])
+
+        db_data = load_page(page_id)
+        log_write(page_id, db_data)
+        print("ret", ret)
+        print(db_data)
+
+        if ret["code"] == 200:
+            return json.dumps(ret)
+        else:
+            return json.dumps(ret), ret["code"]
+    except Exception as e:
+        return json.dumps(e)
+
 @app.route("/data2/<page_id>/",methods = ["POST"])
 def send_data2(page_id):
     try:
@@ -287,6 +560,44 @@ def send_data2(page_id):
         print("senddata",datas)
         
         ret = patch_page(page_id, list(map(lambda e:int(e), datas["index"])), datas["oldVal"], datas["newVal"], datas["revision"])
+
+        db_data = load_page(page_id)
+        log_write(page_id, db_data)
+        print("ret", ret)
+        print(db_data)
+
+        if ret["code"] == 200:
+            return json.dumps(ret)
+        else:
+            return json.dumps(ret), ret["code"]
+    except Exception as e:
+        return json.dumps(e)
+
+
+@app.route("/add_row/<page_id>/",methods = ["POST"])
+def add_row_post(page_id):
+    try:
+        revision = request.json["revision"]
+
+        ret = add_row(page_id, revision)
+
+        db_data = load_page(page_id)
+        log_write(page_id, db_data)
+        print("ret", db_data)
+
+        if ret["code"] == 200:
+            return json.dumps(ret)
+        else:
+            return json.dumps(ret), ret["code"]
+    except Exception as e:
+        return json.dumps(e)
+        
+@app.route("/add_member/<page_id>/",methods = ["POST"])
+def add_member_post(page_id):
+    try:
+        revision = request.json["revision"]
+        
+        ret = add_member(page_id, revision)
 
         db_data = load_page(page_id)
         log_write(page_id, db_data)
@@ -317,7 +628,7 @@ def send_data_test(page_id,revision,old,new,index):
 
 @app.route("/load_data/<page_id>/", methods = ["POST"])
 def load_data(page_id):
-    ret = json.dumps(load_page(page_id)["data"])#pages[page_id])
+    ret = json.dumps(load_page(page_id))#pages[page_id])
     #print(pages[page_id])
     print("load_data",ret)
     return ret
